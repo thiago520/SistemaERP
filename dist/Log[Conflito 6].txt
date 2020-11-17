@@ -1,0 +1,3 @@
+[Wed Sep 30 13:34:21 BRT 2020][Edwin] Erro: java.sql.SQLException: Operation not allowed after ResultSet closed Classe: preencherTabelaiFoodr connection closed. Classe: executaSQL
+[Thu Oct 01 12:44:28 BRT 2020][SABORTRIVIAL] Erro: java.sql.SQLException: After end of result set Classe: preencherTabela
+[Thu Oct 01 12:53:11 BRT 2020][Edwin] Erro: java.sql.SQLException: Illegal operation on empty result set. Classe: ResultadoCliente

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RelatorioBalanco" pageWidth="595" pageHeight="842" whenNoDataType="BlankPage" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="a6c3d773-6676-454a-ae42-1d59ef9be2e7">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Banco ST"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="342"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="653"/>
+	<parameter name="dt1" class="java.lang.String"/>
+	<parameter name="dt2" class="java.lang.String"/>
+	<parameter name="Status" class="java.lang.String"/>
+	<parameter name="logo" class="java.io.InputStream"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT produtos.nome_produto,
+	SUM( itens_pedido.qtda_produto) AS QtdaTotal,
+	SUM( itens_pedido.qtda_produto * itens_pedido.valor_un) AS TOTAL,
+	(SELECT SUM( pedido.valor_pago)
+FROM pedido
+WHERE 
+	 data_agendada BETWEEN $P{dt1} AND $P{dt2} 
+	 AND pedido.status = $P{Status} ) AS VALORRECEBIDO
+FROM produtos,
+	itens_pedido,
+	pedido
+WHERE 
+	 pedido.data_agendada BETWEEN $P{dt1} AND $P{dt2} 
+	 AND pedido.cod_pedido = itens_pedido.cod_pedido 
+	 AND produtos.id_produto = itens_pedido.cod_produto 
+	 AND pedido.status = $P{Status} 
+GROUP BY itens_pedido.cod_produto
+ORDER BY produtos.nome_produto]]>
+	</queryString>
+	<field name="nome_produto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nome_produto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="produtos"/>
+	</field>
+	<field name="QtdaTotal" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="QtdaTotal"/>
+	</field>
+	<field name="TOTAL" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
+	</field>
+	<field name="VALORRECEBIDO" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="VALORRECEBIDO"/>
+	</field>
+	<variable name="SomaTotal" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="73" splitType="Stretch">
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="370" y="50" width="117" height="14" isPrintWhenDetailOverflows="true" uuid="acf51c6a-5106-45b1-9ac9-0a2ee5ce3fc2"/>
+				<textElement textAlignment="Right" markup="none">
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm">
+				<reportElement x="487" y="50" width="88" height="14" isPrintWhenDetailOverflows="true" uuid="8c0ea94e-ced6-4825-9046-4f687c0fe677"/>
+				<textElement textAlignment="Center" markup="none">
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="170" height="50" uuid="f8032dcd-e74d-4382-8408-1fc639f523aa"/>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="25" width="54" height="20" forecolor="#FF9900" uuid="ae1ce641-8c63-4a73-a17e-d6e0cabaddcd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a37a9220-8c04-4213-bc32-f3c94da4a534"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<text><![CDATA[Produto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="25" width="80" height="20" forecolor="#FF9900" uuid="b0f3d483-f834-4e9d-85a5-24d65dfd2fa3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="426807cd-4bb0-4865-8a7f-73539296c90b"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<text><![CDATA[Quantidade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="480" y="25" width="70" height="20" forecolor="#FF9900" uuid="bf79295b-1cbb-49f4-a605-b94283402c06">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3d444ec3-154b-49ab-a090-599048ba0357"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="45" width="550" height="15" uuid="a625a924-b805-4926-ae2f-4570cade3e51"/>
+				<textElement textAlignment="Left" verticalAlignment="Top"/>
+				<text><![CDATA[____________________________________________________________________________________________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="30" height="16" uuid="16051f17-7c2d-4aa9-bd86-e4a1330859bf"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[De:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="0" width="30" height="16" uuid="0b22244d-cb42-4e2c-aefc-c71aa4713354"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Até:]]></text>
+			</staticText>
+			<textField pattern="MMMM d, yyyy">
+				<reportElement x="30" y="0" width="80" height="16" uuid="b815f009-a774-4454-a763-f31bbf4bfade"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dt1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="MMMM d, yyyy">
+				<reportElement x="150" y="0" width="90" height="16" uuid="8e11014a-69a0-48a2-b7af-f76de04fb30b"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dt2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="250" y="0" width="40" height="16" uuid="e7bfeb54-e3ca-4f6d-91ec-e90ba424bc19"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Status:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="290" y="0" width="80" height="16" uuid="7dc48648-e633-435f-b666-e50116073bfd"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Status}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="0" width="210" height="20" uuid="6b8d79f3-6f9a-4489-b2a0-54effc8055d0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a37a9220-8c04-4213-bc32-f3c94da4a534"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_produto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.000">
+				<reportElement x="280" y="0" width="80" height="20" uuid="1ef68949-5cf9-4c79-ab3a-e5f706cd7c1c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="70de22aa-7780-4fe2-b818-66f271b575ac"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QtdaTotal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00;¤-#,##0.00">
+				<reportElement x="480" y="0" width="70" height="20" uuid="7d17e449-8269-4edf-9c2c-5dbf42bfae0a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="23461236-2a7d-4c73-ae31-db3f4f53e23f"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="122">
+			<staticText>
+				<reportElement x="470" y="0" width="80" height="20" uuid="c9aaaa94-91bd-48cb-98b3-37f54b9462e3"/>
+				<text><![CDATA[______________]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00;¤-#,##0.00">
+				<reportElement x="470" y="20" width="80" height="20" uuid="95dbf4c7-7956-4259-a77d-b46f2cf5be24"/>
+				<textElement textAlignment="Center">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SomaTotal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00;¤-#,##0.00">
+				<reportElement x="470" y="60" width="80" height="20" uuid="6fa3db19-0269-4d34-ae0d-a78dd105b078"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VALORRECEBIDO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="390" y="60" width="80" height="20" forecolor="#FF9900" uuid="bccd8cdf-05fc-46c3-abeb-a916f311b17e"/>
+				<textElement textAlignment="Right">
+					<font fontName="Bremen Bd BT"/>
+				</textElement>
+				<text><![CDATA[Recebido:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="470" y="40" width="80" height="20" uuid="46c73db7-281f-4261-b31e-d686d6eaf4d1"/>
+				<text><![CDATA[______________]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+</jasperReport>

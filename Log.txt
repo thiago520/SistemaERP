@@ -1,0 +1,3 @@
+[Wed Jan 15 19:29:33 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+[Mon May 04 15:43:43 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Unknown database 'strivial_cardapio' Classe: conexao
+[Mon May 04 15:43:43 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Unknown database 'strivial_cardapio' Classe: conexao

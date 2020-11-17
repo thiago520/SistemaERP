@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8fa7e528-47da-454a-9acc-04bb7789738c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select * from cardapio]]>
+	</queryString>
+	<field name="data" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada4" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada5" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prato1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prato2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prato3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="guarnicao1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="guarnicao2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="guarnicao3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="data">
+		<groupExpression><![CDATA[$F{data}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="305" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="35" isRemoveLineWhenBlank="true" uuid="2965bcf9-2f4a-4410-94e2-9e78c53ef24b"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salada5}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="35" width="555" height="36" isRemoveLineWhenBlank="true" uuid="2b73fce2-e696-40b3-b365-3b0f1327f50d"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prato1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="71" width="555" height="35" isRemoveLineWhenBlank="true" uuid="47a0be1c-c709-48ef-9103-f90e1189251f"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prato2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="106" width="555" height="34" isRemoveLineWhenBlank="true" uuid="5b535962-6b7c-421a-b89f-c28173405bf2"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prato3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="140" width="555" height="37" isRemoveLineWhenBlank="true" uuid="decf600c-25a9-4f09-8c6a-b93b5317ed55"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{guarnicao1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="177" width="555" height="37" isRemoveLineWhenBlank="true" uuid="a5f583b8-926a-436c-8b2a-bdb8a1c1ad30"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{guarnicao2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="214" width="555" height="38" isRemoveLineWhenBlank="true" uuid="8f21ea62-40b5-4bd6-bfec-3fd36b598a8d"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{guarnicao3}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="252" width="555" height="34" uuid="4da4d43d-0928-4484-bd62-b11a5798de53"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="24"/>
+				</textElement>
+				<text><![CDATA[ARROZ INTEGRAL]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

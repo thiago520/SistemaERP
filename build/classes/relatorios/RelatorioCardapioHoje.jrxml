@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CardapioHoje" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="828" leftMargin="14" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6cbe418b-d821-4039-9f2c-991d9a0e4e63">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#5F9EA0">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFFDFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="efa7efed-57dc-4448-9522-98af5d409391"/>
+	<queryString language="SQL">
+		<![CDATA[select * from cardapio,backcolor]]>
+	</queryString>
+	<field name="data" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada4" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salada5" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prato1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="prato2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="guarnicao1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="guarnicao2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cor" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="data">
+		<groupExpression><![CDATA[$F{data}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="95" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="420" height="55" uuid="14b00b13-a8f0-4315-9472-1e811123f5b7"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="42"/>
+				</textElement>
+				<text><![CDATA[CARDÁPIO DE HOJE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="0" y="55" width="297" height="25" uuid="231d3db0-b53c-49f1-a0ce-ba694745ebc1">
+					<propertyExpression name="net.sf.jasperreports.style.backcolor"><![CDATA[$F{cor}]]></propertyExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Bremen Bd BT" size="18"/>
+				</textElement>
+				<text><![CDATA[NÃO INCLUÍDOS NA MARMITA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="333" y="55" width="87" height="25" uuid="9aa63eaa-9535-4cb7-b77c-f620447bfdc1"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="87" width="802" height="5" uuid="19b8ff54-49b6-4254-b5f6-8fc794d90d99"/>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="489" splitType="Stretch">
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="802" height="51" uuid="14c6f707-a317-4ad7-81be-4e43676d3af8"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="36"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salada1} + " - " + $F{salada2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="51" width="802" height="50" uuid="f883245f-05db-488f-863d-a5128616f35e"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="36"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salada3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="101" width="802" height="49" uuid="93c6033f-1f79-411f-9df8-bdb1f5f0b6a9">
+					<propertyExpression name="net.sf.jasperreports.style.backcolor"><![CDATA[$F{cor}]]></propertyExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="36"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salada4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="150" width="802" height="52" uuid="3a54a2ea-d3e3-4ba8-a596-3671e7feb11b">
+					<propertyExpression name="net.sf.jasperreports.style.backcolor"><![CDATA[$F{cor}]]></propertyExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="36"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salada5}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TH" mode="Transparent" x="0" y="202" width="802" height="50" uuid="c2142298-f436-44b7-831b-97c99c08155e"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="40" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prato1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table" x="0" y="252" width="802" height="50" uuid="a524f14e-d49e-4482-8428-520598bc866e"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="40" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prato2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="302" width="802" height="50" uuid="9ae11930-86cb-471b-9990-d6f377696282"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="40"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{guarnicao1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="352" width="802" height="51" uuid="72af1d66-af81-4018-b6d6-514644b1f9fb"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="40"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{guarnicao2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="403" width="802" height="49" uuid="59ba4bf1-c1d9-4cec-bf86-13fccd4ca1cc"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="40"/>
+				</textElement>
+				<text><![CDATA[arroz, arroz integral e feijão]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="452" width="802" height="33" uuid="0bc5f3c2-4174-4d5f-93ea-13c42a099c89"/>
+				<textElement>
+					<font fontName="Bremen Bd BT" size="18"/>
+				</textElement>
+				<text><![CDATA[observação: cardápio sujeito a alteração sem prévio aviso]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>
