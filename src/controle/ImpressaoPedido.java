@@ -51,8 +51,17 @@ public class ImpressaoPedido {
                 codCliente = conn.rs.getInt("cod_cliente");                        
                 
                 pedido = "----------------------------------------\n\r"
-                         +"      Sabor Trivial "+" -  "+ conn.rs.getString("local") +"\n\r"
-                         +"Pedido: "+ conn.rs.getInt("cod_pedido") +" - "+ formataData.format(conn.rs.getDate("data_agendada")) +" "+ conn.rs.getTime("hora_agendada")+"\n\r\n\r"                                               
+                         +"        Sabor Trivial "+" -  "+ conn.rs.getString("local") +"\n\r"
+                         +"        "+ formataData.format(conn.rs.getDate("dataEntrada")) +" - "+ conn.rs.getString("horaEntrada") +"\n\r\n\r";
+                
+                if (conn.rs.getTime("hora_agendada") != null) {
+                  pedido +="    ------------------------------\n\r"
+                          +"    |          AGENDADO          |\n\r"
+                          +"    |   "+ formataData.format(conn.rs.getDate("data_agendada")) +" - "+ conn.rs.getTime("hora_agendada") +"    |\n\r"
+                          +"    ------------------------------\n\r";
+               }                
+                
+                pedido += "Pedido: "+ conn.rs.getInt("cod_pedido") +"\n\r"                                               
                          +"Dados do Cliente\n\r"
                          +"Nome: "+ conn.rs.getString("nome_cliente")+"\n\r"
                          +"Endereco: "+ conn.rs.getString("endereco_cliente") +", "+ conn.rs.getInt("numero_cliente")+"\n\r"                       
@@ -107,11 +116,15 @@ public class ImpressaoPedido {
                 pedido += "\n\rForma de Pagamento\n\r"
                           + formaPagamento +"\n\r\n\r"
                           +"Observacao Pedido\n\r"
-                          + obs_pedido +"\n\r\n\r\n\r\n\r\n\r"
-                          + ""+(char)27+(char)109;   
+                          + obs_pedido +"\n\r\n\r\n\r\n\r\n\r";
+                //          + ""+(char)27+(char)109;   
+                
+                
                 
                 impressao.detectaImpressoras();
-                impressao.imprime(pedido);                
+                impressao.imprime(pedido);
+                impressao.qrCode();
+                impressao.acionarGuilhotina();
             }
           conn.desconecta();
         } catch (SQLException ex) {

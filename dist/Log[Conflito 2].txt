@@ -1,3 +1,0 @@
-[Sat Jul 18 12:14:59 BRT 2020][SABORTRIVIAL] Erro: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
-[Tue Aug 11 12:02:26 BRT 2020][SABORTRIVIAL] Erro: java.sql.SQLException: Operation not allowed after ResultSet closed Classe: ReceberBotao
-[Tue Aug 11 12:05:27 BRT 2020][SABORTRIVIAL] Erro: java.sql.SQLException: After end of result set Classe: verificaImpressao

@@ -5,11 +5,10 @@
  */
 package visao;
 
-import static antlr.ANTLRTokenTypes.ESC;
+//import bematech.Bematech;
 import controle.Impressao;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
-import static sun.jvm.hotspot.debugger.x86.X86ThreadContext.GS;
 
 
 
@@ -24,33 +23,34 @@ public class FrmPedidoAntigo extends javax.swing.JFrame {
     String hora = "HH:mm:ss";
     String data1, hora1;    
     
-public static final char[] START = new char[] { 0x1B, '@' };
-public static final char[] CORTAR = new char[] { 0x1B, 'm' };
-private static final byte[] CHAR_SIZE_0 = { 0x1B, 0x21, 0x00 };
-private static final byte[] CHAR_SIZE_1 = { 0x1B, 0x21, 0x01 };
-private static final byte[] CHAR_SIZE_2 = { 0x1B, 0x21, 0x30 };
-private static final byte[] CHAR_SIZE_3 = { 0x1B, 0x21, 0x31 }; 
-private static final byte[] AVANCA = { 0x19 };
-private static final byte[] POSESQUEDA = { 0x1B, 'j', '0' };
-private static final byte[] POSCENTRO = { 0x1B, 'j', '1' };
-private static final byte[] POSDIREITA = { 0x1B, 'j', '2' };
-private static final byte[] TABHORIZONTAL = { 0x09 };
-private static final byte[] startTextCondensado = {0x1B, 0x0F };
-private static final byte[] endTextCondensado = { 0x12 };
-private static final byte[] startTextExpandido = { 0x1B, 'W', '1' };
-private static final byte[] endtTextExpandido = { 0x1B, 'W', '0' };
-private static final char[] QRCODE_PREFIX = new char[] { 0x1B, 0x81 };  
-private static final char[] ESPACOHORIZONTAL = new char[] { 0x20 }; 
-private static final byte[] SET_LINE_SPACING_24 =   { 0x1B, 0x33, (byte) 24 };
-private static final byte[] SET_LINE_SPACING_30 =   { 0x1B, 0x33, (byte) 30 };  
-private static final byte[] PRINT_AND_FEED_PAPER =  { 0x1B, 0x4A, 0x00 };   
-private static final byte[] REVERSAO =  { 0x10, 0x4D, 0x01 };
-private static final String ATIVA_NEGRITO = ESC + "E";
-private static final String DESATIVA_NEGRITO = ESC + "F"; 
-private static final String ATIVA_ITALICO = ESC + "4";
-private static final String DESATIVA_ITALICO = ESC + "5";
-private static final String BARCODE = GS + "k";
-
+    
+//public static final char[] START = new char[] { 0x1B, '@' };
+//public static final char[] CORTAR = new char[] { 0x1B, 'm' };
+//private static final byte[] CHAR_SIZE_0 = { 0x1B, 0x21, 0x00 };
+//private static final byte[] CHAR_SIZE_1 = { 0x1B, 0x21, 0x01 };
+//private static final byte[] CHAR_SIZE_2 = { 0x1B, 0x21, 0x30 };
+//private static final byte[] CHAR_SIZE_3 = { 0x1B, 0x21, 0x31 }; 
+//private static final byte[] AVANCA = { 0x19 };
+//private static final byte[] POSESQUEDA = { 0x1B, 'j', '0' };
+//private static final byte[] POSCENTRO = { 0x1B, 'j', '1' };
+//private static final byte[] POSDIREITA = { 0x1B, 'j', '2' };
+//private static final byte[] TABHORIZONTAL = { 0x09 };
+//private static final byte[] startTextCondensado = {0x1B, 0x0F };
+//private static final byte[] endTextCondensado = { 0x12 };
+//private static final byte[] startTextExpandido = { 0x1B, 'W', '1' };
+//private static final byte[] endtTextExpandido = { 0x1B, 'W', '0' };
+//private static final char[] QRCODE_PREFIX = new char[] { 0x1B, 0x81 };  
+//private static final char[] ESPACOHORIZONTAL = new char[] { 0x20 }; 
+//private static final byte[] SET_LINE_SPACING_24 =   { 0x1B, 0x33, (byte) 24 };
+//private static final byte[] SET_LINE_SPACING_30 =   { 0x1B, 0x33, (byte) 30 };  
+//private static final byte[] PRINT_AND_FEED_PAPER =  { 0x1B, 0x4A, 0x00 };   
+//private static final byte[] REVERSAO =  { 0x10, 0x4D, 0x01 };
+//private static final String ATIVA_NEGRITO = ESC + "E";
+//private static final String DESATIVA_NEGRITO = ESC + "F"; 
+//private static final String ATIVA_ITALICO = ESC + "4";
+//private static final String DESATIVA_ITALICO = ESC + "5";
+//private static final String BARCODE = GS + "k";
+//
 
    
 
@@ -62,7 +62,27 @@ private static final String BARCODE = GS + "k";
         initComponents();         	       
         jTextAreaPedido.setLineWrap(true);        
         LimpaTela();
-    }
+       // String dados = "D:/NetBeansProjects/sistemaERPv1.0/src/bematech";
+       // NativeLibrary.addSearchPath("mp2064", dados);
+        System.out.println(System.getProperty("os.name"));
+       	int iRetorno;
+        String porta = "COM7";
+//	Bematech cupom = new Bematech();
+//        
+//        iRetorno = cupom.ConfiguraModeloImpressora(7);
+//	iRetorno = cupom.IniciaPorta(porta);        
+//	iRetorno = cupom.FormataTX("        Vale Compra\r\n", 2, 0, 0, 1, 0);
+//        iRetorno = cupom.Le_Status();
+//					System.out.println("Status:" + iRetorno + "\n");
+//					iRetorno = cupom.FechaPorta();
+//					if (iRetorno == 1){
+//						System.out.println("Função executada\n");
+//					}
+//					else {
+//						System.out.println("Erro de comunicação\n");
+//					}
+    }    
+  
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -250,20 +270,20 @@ private static final String BARCODE = GS + "k";
                 + "----------------------------------------\n\r\n\r"
                 + jTextAreaObs.getText() +"\n\r\n\r\n\r\n\r\n\r");
                  */                  
-       String texto = new String (START) +
-                      ATIVA_NEGRITO +"texto negrito" + DESATIVA_NEGRITO;
-       String texto1 = START + ATIVA_ITALICO + "\ntexto italico" + DESATIVA_ITALICO;
-       String texto2 =  CHAR_SIZE_0 + "\ntexto char 0";
-       String texto3 = CHAR_SIZE_1 + "\ntexto char 1";
-       String texto4 = CHAR_SIZE_2 + "\ntexto char 2";
-       String texto5 = CHAR_SIZE_3 + "\ntexto char 3";
-       
-       impressao.imprime(texto);
-       impressao.imprime(texto1);
-       impressao.imprime(texto2);
-       impressao.imprime(texto3);
-       impressao.imprime(texto4);
-       impressao.imprime(texto5);
+//       String texto = new String (START) +
+//                      ATIVA_NEGRITO +"texto negrito" + DESATIVA_NEGRITO;
+//       String texto1 = START + ATIVA_ITALICO + "\ntexto italico" + DESATIVA_ITALICO;
+//       String texto2 =  CHAR_SIZE_0 + "\ntexto char 0";
+//       String texto3 = CHAR_SIZE_1 + "\ntexto char 1";
+//       String texto4 = CHAR_SIZE_2 + "\ntexto char 2";
+//       String texto5 = CHAR_SIZE_3 + "\ntexto char 3";
+//       
+//       impressao.imprime(texto);
+//       impressao.imprime(texto1);
+//       impressao.imprime(texto2);
+//       impressao.imprime(texto3);
+//       impressao.imprime(texto4);
+//       impressao.imprime(texto5);
         
         impressao.acionarGuilhotina(); 
         LimpaTela();

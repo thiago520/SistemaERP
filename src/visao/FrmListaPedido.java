@@ -391,6 +391,12 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         setTitle("Gerenciador de Pedidos");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
+        jTextFieldPesquisa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldPesquisaActionPerformed(evt);
+            }
+        });
+
         jLabel1.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jLabel1.setText("Cliente:");
 
@@ -627,7 +633,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButtonPesquisar)
                         .addComponent(jCheckBoxAtualizar))
-                    .addComponent(jDateChooserFinal, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                    .addComponent(jDateChooserFinal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jDateChooserInicial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextFieldPesquisa))
                 .addGap(36, 36, 36)
@@ -669,7 +675,12 @@ public final class FrmListaPedido extends javax.swing.JFrame {
      //  statusBar = 1;  
        String dataInicial = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserInicial.getDate());
        String dataFinal = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserFinal.getDate());        
-       preencherTabela("select pedido.cod_pedido,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,pedido.status,pedido.local,pedido.datahora_saida, pedido.entregador from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada between '" + dataInicial + "' and '" + dataFinal + "' order by pedido.data_agendada,pedido.hora_agendada,pedido.cod_pedido");       
+       preencherTabela("select pedido.cod_pedido,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,pedido.status,pedido.local,pedido.datahora_saida, pedido.entregador "
+               + "from pedido,clientes where "
+               + "pedido.cod_cliente = clientes.id_cliente "
+               + "and clientes.nome_cliente like '%" + jTextFieldPesquisa.getText() + "%' "
+               + "and pedido.data_agendada between '" + dataInicial + "' and '" + dataFinal + "'"
+               + " order by pedido.data_agendada,pedido.hora_agendada,pedido.cod_pedido");       
     }//GEN-LAST:event_jButtonPesquisarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
@@ -743,6 +754,10 @@ public final class FrmListaPedido extends javax.swing.JFrame {
             BarraStatus();
         }
     }//GEN-LAST:event_jCheckBoxAtualizarActionPerformed
+
+    private void jTextFieldPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPesquisaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldPesquisaActionPerformed
 
     public void preencherTabelaiFood(){                 
         ArrayList dados = new ArrayList();

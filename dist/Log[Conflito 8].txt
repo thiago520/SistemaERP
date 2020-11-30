@@ -1,3 +1,0 @@
-[Fri Oct 23 11:51:47 BRT 2020][Edwin] Erro: com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException: No operations allowed after connection closed. Classe: executaSQL
-[Sat Oct 24 11:41:58 BRT 2020][Edwin] Erro: java.sql.SQLException: Operation not allowed after ResultSet closed Classe: preencherTabela
-[Sat Oct 24 11:51:45 BRT 2020][Edwin] Erro: com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException: No operations allowed after connection closed. Classe: executaSQL

@@ -35,7 +35,7 @@ public final class Impressao {
 				if(p.getName()!=null && p.getName().contains("MP-4200")){ //MP-4200
 					System.out.println("Impressora Selecionada: " + p.getName());
 					System.out.println("Impressora encontrada: " + p.getName());
-					impressora = p;
+					impressora = p;                                        
 				}	
 			}
 		} catch (Exception e) {
@@ -73,4 +73,18 @@ public final class Impressao {
             str = str.replaceAll("[^\\p{ASCII}]", "");
             return str;               
         }
+        
+        public void qrCode() {
+            String recebeQR = "00020126580014br.gov.bcb.pix0123sac@sabortrivial.com.br0209PIX EMAIL520400005303986540612.505802BR5910----------6007MARINGA62090505Email6304107";
+            String qr = new String(new char[]{0x1B, '-', 1})  
+                    + new String(new byte[]{27, 97, 1})  
+                    + new String(new byte[]{29, 40, 107, 3, 0, 49, 67, 5})  
+                    + new String(new byte[]{29, 40, 107, 3, 0, 49, 69, 49})  
+                    + new String(new byte[]{29, 40, 107, 'b', 'c', 49, 80, 48})  
+                    + recebeQR
+                    + new String(new char[]{29, 40, 107, 3, 0, 49, 81, 48, 12});
+            
+            imprime(qr);
+        }
+        
 }
