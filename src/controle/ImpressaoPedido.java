@@ -6,6 +6,7 @@
 package controle;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
@@ -20,15 +21,19 @@ public class ImpressaoPedido {
     ConectaBanco conn = new ConectaBanco();
     Impressao impressao = new Impressao();
     NumberFormat formatoMoeda = NumberFormat.getCurrencyInstance();  
-    SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");    
+    SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
+    DecimalFormat formataDecimal = new DecimalFormat("0.###");
     String pedido = "";
     Double valorTotal = 0.0;
     Double desconto = 0.0;
     Double saldo = 0.0;
     Double valorPago = 0.0;
     Double troco = 0.0;
+    Double qtaProduto = 0.0;
+    Double qtaProdutoF = 0.0;
     String formaPagamento = "";
     String obs_pedido = "";
+    String horaAgendada = "";
     int codCliente = 0;
     
 
@@ -36,7 +41,7 @@ public class ImpressaoPedido {
         
         try {
             conn.conexao();
-            conn.executaSQL("select pedido.cod_cliente,pedido.cod_pedido,pedido.local,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,clientes.endereco_cliente,clientes.numero_cliente,clientes.complemento_cliente,clientes.empresa_cliente,clientes.telefone_cliente,clientes.celular_cliente,pedido.valor_total,pedido.desconto,pedido.valor_pago,pedido.troco,pedido.forma_pagamento,pedido.obs_pedido from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.cod_pedido = '"+ codPedido +"' ");
+            conn.executaSQL("select cast(pedido.datahora_entrada as time) as horaEntrada, cast(pedido.datahora_entrada as date) as dataEntrada, pedido.cod_cliente,pedido.cod_pedido,pedido.local,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,clientes.endereco_cliente,clientes.numero_cliente,clientes.complemento_cliente,clientes.empresa_cliente,clientes.telefone_cliente,clientes.celular_cliente,pedido.valor_total,pedido.desconto,pedido.valor_pago,pedido.troco,pedido.forma_pagamento,pedido.obs_pedido from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.cod_pedido = '"+ codPedido +"' ");
             
             if(!conn.rs.next()) {
                 
@@ -76,7 +81,13 @@ public class ImpressaoPedido {
                 conn.rs.first();               
                    
                 do{
-                    pedido += conn.rs.getDouble("qtda_produto")+"   "+ conn.rs.getString("nome_produto")+"            "+ formatoMoeda.format(conn.rs.getDouble("qtda_produto")*conn.rs.getDouble("valor_un"))+"\n\r"
+                    qtaProduto = conn.rs.getDouble("qtda_produto");
+                    if (qtaProduto < 0) {
+                        qtaProdutoF = Double.parseDouble(formataDecimal.format(qtaProduto));                        
+                    } else {
+                        qtaProdutoF = qtaProduto;
+                    }
+                    pedido += qtaProdutoF +"   "+ conn.rs.getString("nome_produto")+"            "+ formatoMoeda.format(conn.rs.getDouble("qtda_produto")*conn.rs.getDouble("valor_un"))+"\n\r"
                            +"     "+ conn.rs.getString("obs_produto") +"\n\r";
                 }while(conn.rs.next()); 
                 
@@ -122,8 +133,7 @@ public class ImpressaoPedido {
                 
                 
                 impressao.detectaImpressoras();
-                impressao.imprime(pedido);
-                impressao.qrCode();
+                impressao.imprime(pedido);              
                 impressao.acionarGuilhotina();
             }
           conn.desconecta();

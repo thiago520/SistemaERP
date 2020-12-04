@@ -1,3 +1,6 @@
 [Wed Jan 15 19:29:33 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
-[Wed Nov 25 23:54:26 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException: Data source rejected establishment of connection,  message from server: "Too many connections" Classe: conexao
-[Wed Nov 25 23:54:26 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException: Data source rejected establishment of connection,  message from server: "Too many connections" Classe: conexao
+
+
+[Thu Dec 03 16:48:57 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. Classe: conexao

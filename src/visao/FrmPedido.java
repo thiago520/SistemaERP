@@ -1375,7 +1375,7 @@ public class FrmPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldTrocoKeyReleased
 
     private void jButtonSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSalvarActionPerformed
-        
+        String data = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserData.getDate());
         mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
         mod.setCod_cliente(codCliente);
         mod.setStatus((String) jComboBoxStatus.getSelectedItem());
@@ -1393,9 +1393,14 @@ public class FrmPedido extends javax.swing.JFrame {
             mod.setValor_pago(Double.parseDouble(jTextFieldValorPago.getText().replace(",",".")));
         }
         
-        String data = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserData.getDate());                
-        mod.setData_agendada(data);
-        mod.setHora_agendada(jFormattedTextFieldHora.getText());
+        if (jCheckBoxAgendar.isSelected()) {                          
+            mod.setData_agendada(data);
+            mod.setHora_agendada(jFormattedTextFieldHora.getText());    
+        } else {
+            mod.setData_agendada(data);
+            mod.setHora_agendada(null);
+        }                        
+        
         mod.setObs_pedido(jTextAreaObs.getText());
         mod.setLocal((String) jComboBoxLocal.getSelectedItem());
         

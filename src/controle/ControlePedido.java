@@ -22,7 +22,7 @@ public class ControlePedido {
         connPedidos.conexao();
         
         try {            
-            PreparedStatement pst = connPedidos.conn.prepareStatement("insert into pedido (cod_pedido,cod_cliente,status,forma_pagamento,desconto,data_agendada,hora_agendada,obs_pedido,local,troco,valor_total,entregador) values (?,?,?,?,?,?,?,?,?,?,?,?) ");
+            PreparedStatement pst = connPedidos.conn.prepareStatement("insert into pedido (cod_pedido,cod_cliente,status,forma_pagamento,desconto,data_agendada,hora_agendada,obs_pedido,local,troco,valor_total,entregador,datahora_entrada) values (?,?,?,?,?,?,?,?,?,?,?,?,SYSDATE()) ");
             pst.setInt(1,mod.getCod_pedido());
             pst.setInt(2,mod.getCod_cliente());
             pst.setString(3,mod.getStatus());
