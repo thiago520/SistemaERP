@@ -83,10 +83,13 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         jDateChooserInicial.setDate(new Date());
         jDateChooserFinal.setDate(new Date());        
         data = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserInicial.getDate());                           
-        jCheckBoxAtualizar.setSelected(true);   
-        connLPedido.conexao();
-        preencherTabela("select pedido.cod_pedido,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,pedido.status,pedido.local,pedido.datahora_saida, pedido.entregador from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada ='" + data + "' order by pedido.data_agendada,pedido.hora_agendada,pedido.cod_pedido");        
-        preencherTabelaiFood();
+        jCheckBoxAtualizar.setSelected(true);
+        preencherTabela("select cast(pedido.datahora_entrada as time) as horaEntrada, cast(pedido.datahora_entrada as date) as dataEntrada, "
+                + "pedido.data_agendada, pedido.cod_pedido, pedido.hora_agendada, clientes.nome_cliente,pedido.status,pedido.local,"
+                + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador "
+                + "from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada = '"+ data +"' "
+                + "order by dataEntrada,pedido.data_agendada,pedido.hora_agendada,horaEntrada,pedido.cod_pedido");
+      //  preencherTabelaiFood();
         qtdePedidos();
         InputMap inputMap = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0),"Novo");        
@@ -109,6 +112,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
     
     public void preencherTabela(String SQL){
         ArrayList dados = new ArrayList();
+        String dataHoraSaida = null;
         connLPedido.conexao();  
     
         String [] Colunas = new String[]{"Código","Data","Hora","Cliente","Local","Status","Entregador","Saída"};        
@@ -120,8 +124,12 @@ public final class FrmListaPedido extends javax.swing.JFrame {
             } else {
                     connLPedido.rs.first();
                     do{ 
-                        data = new SimpleDateFormat("dd/MM/yyyy").format(connLPedido.rs.getDate("data_agendada"));
-                        dados.add(new Object[]{connLPedido.rs.getInt("cod_pedido"),data,connLPedido.rs.getTime("hora_agendada"),connLPedido.rs.getString("nome_cliente"),connLPedido.rs.getString("local"),connLPedido.rs.getString("status"),connLPedido.rs.getString("entregador"),connLPedido.rs.getString("datahora_saida")});                        
+                        if (connLPedido.rs.getDate("dataSaida") != null ) {
+                            dataHoraSaida = formataData.format(connLPedido.rs.getDate("dataSaida"));
+                            dataHoraSaida += " - " + connLPedido.rs.getString("horaSaida");    
+                        }
+                         dados.add(new Object[]{connLPedido.rs.getInt("cod_pedido"),formataData.format(connLPedido.rs.getDate("data_agendada")),connLPedido.rs.getString("hora_agendada"),connLPedido.rs.getString("nome_cliente"),connLPedido.rs.getString("local"),connLPedido.rs.getString("status"),connLPedido.rs.getString("entregador"),dataHoraSaida});                         
+                         dataHoraSaida = "";
                     }while(connLPedido.rs.next());
                 }
         } catch (SQLException ex) {
@@ -154,7 +162,9 @@ public final class FrmListaPedido extends javax.swing.JFrame {
       //  if (statusBar == 0) {
           if (jCheckBoxAtualizar.isSelected() == true) {
             BarraStatus();      
-          }           
+          }
+          connLPedido.desconecta();
+          
       //  }         
     }  
     
@@ -213,8 +223,15 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                     }                    
                 }  
                     if (jCheckBoxAtualizar.isSelected() == true) {
-                        preencherTabela("select pedido.cod_pedido,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,pedido.status,pedido.local,pedido.datahora_saida, pedido.entregador from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada between '" + dataInicial + "' and '" + dataFinal + "' order by pedido.data_agendada,pedido.hora_agendada,pedido.cod_pedido");
-                        preencherTabelaiFood();
+                        preencherTabela("select cast(pedido.datahora_entrada as time) as horaEntrada, "
+                                + "cast(pedido.datahora_entrada as date) as dataEntrada, pedido.data_agendada, pedido.cod_pedido, "
+                                + "pedido.hora_agendada, clientes.nome_cliente,pedido.status,pedido.local,"
+                                + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador "
+                                + "from pedido,clientes "
+                                + "where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada "
+                                + "between '"+ dataInicial +"' and '"+ dataFinal +"' "
+                                + "order by dataEntrada,pedido.data_agendada,pedido.hora_agendada,horaEntrada,pedido.cod_pedido");
+                    //    preencherTabelaiFood();
                         qtdePedidos();
                         try {
                              if ("SABORTRIVIAL".equals(InetAddress.getLocalHost().getHostName())) {
@@ -243,7 +260,13 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         data = new SimpleDateFormat("yyyy-MM-dd").format(new Date());        
         
         connLPedido.conexao();
-        connLPedido.executaSQL("select pedido.cod_pedido,pedido.local from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.status = 'Agendado' and pedido.data_agendada = '"+ data +"' and (pedido.hora_agendada between '"+ horaAtual +"' and '"+ horaAdiantada +"')");        
+        connLPedido.executaSQL("select "
+                + "pedido.cod_pedido,"
+                + "pedido.local"
+                + " from pedido,clientes "
+                + "where pedido.cod_cliente = clientes.id_cliente and pedido.status = 'Agendado' and pedido.data_agendada = '" + data + "' "
+                + "and (pedido.hora_agendada between '" + horaAtual + "' and '" + horaAdiantada + "' or pedido.hora_agendada is null)");
+             
              
         try {
             if(connLPedido.rs.next()) {
@@ -668,6 +691,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSairActionPerformed
+        connLPedido.desconecta();
         dispose();
     }//GEN-LAST:event_jButtonSairActionPerformed
 
@@ -675,12 +699,22 @@ public final class FrmListaPedido extends javax.swing.JFrame {
      //  statusBar = 1;  
        String dataInicial = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserInicial.getDate());
        String dataFinal = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserFinal.getDate());        
-       preencherTabela("select pedido.cod_pedido,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,pedido.status,pedido.local,pedido.datahora_saida, pedido.entregador "
-               + "from pedido,clientes where "
-               + "pedido.cod_cliente = clientes.id_cliente "
-               + "and clientes.nome_cliente like '%" + jTextFieldPesquisa.getText() + "%' "
-               + "and pedido.data_agendada between '" + dataInicial + "' and '" + dataFinal + "'"
-               + " order by pedido.data_agendada,pedido.hora_agendada,pedido.cod_pedido");       
+       preencherTabela("select "
+                + "cast(pedido.datahora_entrada as time) as horaEntrada,"
+                + " COALESCE(cast(pedido.datahora_entrada as date),"
+                + "pedido.data_agendada) AS dataAgendada,"
+                + "pedido.cod_pedido,"
+                + "pedido.data_agendada,"
+                + "pedido.hora_agendada,"
+                + "clientes.nome_cliente,"
+                + "pedido.status,"
+                + "pedido.local,"
+                + " cast(pedido.datahora_saida as time) as horaSaida,"
+                + " cast(pedido.datahora_saida as date) as dataSaida,"
+                + " pedido.entregador "
+                + "from pedido,clientes "
+                + "where pedido.cod_cliente = clientes.id_cliente and clientes.nome_cliente like '%" + jTextFieldPesquisa.getText() + "%' and COALESCE(cast(pedido.datahora_entrada as date),pedido.data_agendada) between '"+ dataInicial +"' and '" + dataFinal + "' "
+                + "order by dataAgendada,pedido.data_agendada,pedido.hora_agendada,pedido.cod_pedido");       
     }//GEN-LAST:event_jButtonPesquisarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
@@ -762,7 +796,9 @@ public final class FrmListaPedido extends javax.swing.JFrame {
     public void preencherTabelaiFood(){                 
         ArrayList dados = new ArrayList();
         connLPedido.conexao();        
-        String SQL = "select pedido.cod_cliente, clientes.nome_cliente, Count(*) as pedidos from pedido,clientes where pedido.local = 'ifood' and pedido.cod_cliente = clientes.id_cliente and pedido.status = 'Finalizado' group by pedido.cod_cliente HAVING pedidos > 8 order by pedidos DESC";
+        String SQL = "select pedido.cod_cliente, clientes.nome_cliente, Count(*) as pedidos from pedido,clientes "
+                + "where pedido.local = 'ifood' and pedido.cod_cliente = clientes.id_cliente and pedido.status = 'Finalizado' "
+                + "group by pedido.cod_cliente HAVING pedidos > 8 order by pedidos DESC";
         
     
         String [] Colunas = new String[]{"Código Cliente","Nome","Pedidos"};        
@@ -792,7 +828,9 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         jTableiFood.getColumnModel().getColumn(2).setResizable(false);        
         
         jTableiFood.getTableHeader().setReorderingAllowed(false);
-        jTableiFood.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);      
+        jTableiFood.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        
+        connLPedido.desconecta();        
     }
      
     public void avisoiFood() {         
@@ -841,6 +879,8 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(FrmListaPedido.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        connLPedido.desconecta();
     }
      
      

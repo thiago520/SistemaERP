@@ -42,6 +42,7 @@ public final class Impressao {
 			//e.printStackTrace();
 		}
 	}
+        
 	public synchronized boolean imprime(String texto) {
 		// se nao existir impressora, entao avisa usuario
 		// senao imprime texto

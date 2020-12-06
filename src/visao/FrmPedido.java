@@ -846,11 +846,11 @@ public class FrmPedido extends javax.swing.JFrame {
             jButtonInserir.setEnabled(true);
             jTextFieldPProduto.setEditable(true);
         }
-        dispose();       
+        dispose();        
     }//GEN-LAST:event_jButtonSairActionPerformed
 
     public void ReceberBotao(ModeloPedido btn) throws ParseException{              
-        btnLista = btn.getBtnAlterarLista();        
+        btnLista = btn.getBtnAlterarLista();
         if (btnLista == 1) {
             jTextFieldPCliente.setText(""); 
             jTextFieldValorPago.setEnabled(false); 
@@ -888,10 +888,10 @@ public class FrmPedido extends javax.swing.JFrame {
             ResultadoCliente();            
             preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + btn.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");
             AtualizaPrecos();            
-        }
+        }        
     }           
     
-    public void ListaCliente() {        
+    public void ListaCliente() {                
         try {            
             connPedido.executaSQL("select * from clientes where nome_cliente like '" + jTextFieldPCliente.getText() + "%' or telefone_cliente like '%" + jTextFieldPCliente.getText() + "%' or celular_cliente like '%" + jTextFieldPCliente.getText() + "%' order by nome_cliente");
             MODELO.removeAllElements();
@@ -910,11 +910,10 @@ public class FrmPedido extends javax.swing.JFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro ao listar dados");
             log.gravaErro(ex.toString(), "ListaCliente");            
-        }
-        
+        }        
     }
     
-    public void ListaProduto() {        
+    public void ListaProduto() {
         try {            
             connPedido.executaSQL("select * from produtos where nome_produto like '%"+ jTextFieldPProduto.getText() +"%' order by nome_produto");
             MODELO.removeAllElements();
@@ -933,8 +932,7 @@ public class FrmPedido extends javax.swing.JFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro ao listar dados");
             log.gravaErro(ex.toString(), "ListaProduto");            
-        }
-        
+        }        
     }
     
     public void MostraCliente() {
@@ -942,7 +940,7 @@ public class FrmPedido extends javax.swing.JFrame {
         if (Linha >= 0) {
             connPedido.executaSQL("select * from clientes where id_cliente = " + codigoC[Linha] + "");
             ResultadoCliente();
-        }
+        }        
     }
     
     public void MostraProduto() {
@@ -950,10 +948,10 @@ public class FrmPedido extends javax.swing.JFrame {
         if (Linha >= 0) {
             connPedido.executaSQL("select * from produtos where id_produto = " + codigoP[Linha] + "");                                      
             ResultadoProduto();
-        }
+        }        
     }
     
-    public void ResultadoCliente() {                             
+    public void ResultadoCliente() {        
         try {
             connPedido.rs.first();            
             codCliente = connPedido.rs.getInt("id_cliente");
@@ -991,7 +989,7 @@ public class FrmPedido extends javax.swing.JFrame {
             
         } catch (SQLException ex) {
             log.gravaErro(ex.toString(), "ResultadoCliente");            
-        }
+        }        
     }
     
     public void ResultadoProduto() {                        
@@ -1023,7 +1021,7 @@ public class FrmPedido extends javax.swing.JFrame {
         }
     }
     
-    public void preencherTabelaItens(String SQL){
+    public void preencherTabelaItens(String SQL){        
         ArrayList dados = new ArrayList();        
         Double precoTotal;          
         BigDecimal valorArred;
@@ -1064,7 +1062,7 @@ public class FrmPedido extends javax.swing.JFrame {
         jTableItens.getTableHeader().setReorderingAllowed(false);
         jTableItens.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);        
         CorNaLinhaEstoque();
-        AtualizaPrecos();                
+        AtualizaPrecos();        
     }  
     
     public void CorNaLinhaEstoque(){        
@@ -1442,7 +1440,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }         
             LimpaTela(); 
         }
-        verificaiFood(codCliente);     
+        verificaiFood(codCliente);        
     }//GEN-LAST:event_jButtonSalvarActionPerformed
 
     private void jTextFieldValorUnKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValorUnKeyReleased

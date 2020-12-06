@@ -8,6 +8,8 @@ package visao;
 //import bematech.Bematech;
 import controle.Impressao;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 
@@ -22,6 +24,8 @@ public class FrmPedidoAntigo extends javax.swing.JFrame {
     String data = "dd/MM/yyyy";
     String hora = "HH:mm:ss";
     String data1, hora1;    
+    DecimalFormat formataDecimal = new DecimalFormat("0.000");   
+    DecimalFormat formataInt = new DecimalFormat("0.##");
     
     
 //public static final char[] START = new char[] { 0x1B, '@' };
@@ -67,6 +71,17 @@ public class FrmPedidoAntigo extends javax.swing.JFrame {
         System.out.println(System.getProperty("os.name"));
        	int iRetorno;
         String porta = "COM7";
+        
+        Double num = 2.0;
+        String num2 = "";
+        
+        if (num < 1) {
+            num2 = formataDecimal.format(num);
+        } else {
+            num2 = formataInt.format(num);
+        }
+            System.out.println(num2);
+        
 //	Bematech cupom = new Bematech();
 //        
 //        iRetorno = cupom.ConfiguraModeloImpressora(7);

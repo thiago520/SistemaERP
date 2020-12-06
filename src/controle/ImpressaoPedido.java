@@ -22,7 +22,8 @@ public class ImpressaoPedido {
     Impressao impressao = new Impressao();
     NumberFormat formatoMoeda = NumberFormat.getCurrencyInstance();  
     SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
-    DecimalFormat formataDecimal = new DecimalFormat("0.###");
+    DecimalFormat formataDecimal = new DecimalFormat("0.000");   
+    DecimalFormat formataInt = new DecimalFormat("0.##");
     String pedido = "";
     Double valorTotal = 0.0;
     Double desconto = 0.0;
@@ -41,7 +42,12 @@ public class ImpressaoPedido {
         
         try {
             conn.conexao();
-            conn.executaSQL("select cast(pedido.datahora_entrada as time) as horaEntrada, cast(pedido.datahora_entrada as date) as dataEntrada, pedido.cod_cliente,pedido.cod_pedido,pedido.local,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,clientes.endereco_cliente,clientes.numero_cliente,clientes.complemento_cliente,clientes.empresa_cliente,clientes.telefone_cliente,clientes.celular_cliente,pedido.valor_total,pedido.desconto,pedido.valor_pago,pedido.troco,pedido.forma_pagamento,pedido.obs_pedido from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.cod_pedido = '"+ codPedido +"' ");
+            conn.executaSQL("select cast(pedido.datahora_entrada as time) as horaEntrada, cast(pedido.datahora_entrada as date) as dataEntrada, "
+                    + "pedido.cod_cliente,pedido.cod_pedido,pedido.local,pedido.data_agendada,pedido.hora_agendada,clientes.nome_cliente,clientes.endereco_cliente,"
+                    + "clientes.numero_cliente,clientes.complemento_cliente,clientes.empresa_cliente,clientes.telefone_cliente,clientes.celular_cliente,"
+                    + "pedido.valor_total,pedido.desconto,pedido.valor_pago,pedido.troco,pedido.forma_pagamento,pedido.obs_pedido "
+                    + "from pedido,clientes "
+                    + "where pedido.cod_cliente = clientes.id_cliente and pedido.cod_pedido = '"+ codPedido +"' ");
             
             if(!conn.rs.next()) {
                 
@@ -77,15 +83,17 @@ public class ImpressaoPedido {
                          +"\n\r\n\rItens do Pedido\n\r"
                          +"Qtda   Item                       Preco\n\r";
                 
-                conn.executaSQL("select itens_pedido.qtda_produto,produtos.nome_produto,itens_pedido.valor_un,itens_pedido.obs_produto from pedido,itens_pedido,produtos where pedido.cod_pedido = itens_pedido.cod_pedido and itens_pedido.cod_produto = produtos.id_produto and itens_pedido.cod_pedido = '"+ codPedido +"' ");
+                conn.executaSQL("select itens_pedido.qtda_produto,produtos.nome_produto,itens_pedido.valor_un,itens_pedido.obs_produto "
+                        + "from pedido,itens_pedido,produtos where pedido.cod_pedido = itens_pedido.cod_pedido and itens_pedido.cod_produto = produtos.id_produto"
+                        + " and itens_pedido.cod_pedido = '"+ codPedido +"' ");
                 conn.rs.first();               
                    
                 do{
                     qtaProduto = conn.rs.getDouble("qtda_produto");
-                    if (qtaProduto < 0) {
-                        qtaProdutoF = Double.parseDouble(formataDecimal.format(qtaProduto));                        
+                    if (qtaProduto < 1) {
+                        qtaProdutoF = Double.parseDouble(formataDecimal.format(qtaProduto));
                     } else {
-                        qtaProdutoF = qtaProduto;
+                        qtaProdutoF = Double.parseDouble(formataInt.format(qtaProduto));
                     }
                     pedido += qtaProdutoF +"   "+ conn.rs.getString("nome_produto")+"            "+ formatoMoeda.format(conn.rs.getDouble("qtda_produto")*conn.rs.getDouble("valor_un"))+"\n\r"
                            +"     "+ conn.rs.getString("obs_produto") +"\n\r";

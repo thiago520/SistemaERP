@@ -26,6 +26,8 @@ public class ConectaBanco {
     public Statement stm;
     public ResultSet rs;
     private final String driver = "org.gjt.mm.mysql.Driver";
+    //private final String driver = "com.microsoft.sqlserver";
+ //   private final String driver = "org.mariadb.jdbc";
     Dados dados = new Dados();
     
     
@@ -36,6 +38,7 @@ public class ConectaBanco {
         try {
             System.setProperty("jdbc.Drivers", driver);
             conn = DriverManager.getConnection(dados.caminho, dados.usuario, dados.senha);
+       //     conn = DriverManager.getConnection(dados.azuredb);
           //  JOptionPane.showMessageDialog(null,"Conectado com sucesso!");
         } catch (SQLException ex) {
             Logger.getLogger(ConectaBanco.class.getName()).log(Level.SEVERE, null, ex);
