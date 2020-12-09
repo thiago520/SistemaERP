@@ -1211,12 +1211,14 @@ public class FrmPedido extends javax.swing.JFrame {
     private void jCheckBoxAgendarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxAgendarActionPerformed
         if (jCheckBoxAgendar.isSelected()) {
            jDateChooserData.setEnabled(true);
+           jFormattedTextFieldHora.setText(new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis())));
            jFormattedTextFieldHora.setEnabled(true);
            jFormattedTextFieldHora.requestFocus();
            jFormattedTextFieldHora.selectAll();
         }
         if (!jCheckBoxAgendar.isSelected()) {
            jDateChooserData.setEnabled(false);
+           jFormattedTextFieldHora.setText(null);           
            jFormattedTextFieldHora.setEnabled(false); 
         }
     }//GEN-LAST:event_jCheckBoxAgendarActionPerformed
@@ -1390,15 +1392,6 @@ public class FrmPedido extends javax.swing.JFrame {
         if (!"".equals(jTextFieldValorPago.getText())) {  
             mod.setValor_pago(Double.parseDouble(jTextFieldValorPago.getText().replace(",",".")));
         }
-        
-        if (jCheckBoxAgendar.isSelected()) {                          
-            mod.setData_agendada(data);
-            mod.setHora_agendada(jFormattedTextFieldHora.getText());    
-        } else {
-            mod.setData_agendada(data);
-            mod.setHora_agendada(null);
-        }                        
-        
         mod.setObs_pedido(jTextAreaObs.getText());
         mod.setLocal((String) jComboBoxLocal.getSelectedItem());
         
@@ -1415,7 +1408,14 @@ public class FrmPedido extends javax.swing.JFrame {
         if (jTableItens.getRowCount() == 0) {
             JOptionPane.showMessageDialog(rootPane, "Não inserido itens no pedido!");
         } else {        
-            if(btnLista == 1){            
+            if(btnLista == 1){ 
+                if (jCheckBoxAgendar.isSelected()) {                          
+                    mod.setData_agendada(data);
+                    mod.setHora_agendada(jFormattedTextFieldHora.getText());    
+                } else {
+                    mod.setData_agendada(data);
+                    mod.setHora_agendada(null);
+                }                        
                 control.InserirPedido(mod); 
                 if ( ! jCheckBoxAgendar.isSelected()) {
                     try{
@@ -1435,6 +1435,12 @@ public class FrmPedido extends javax.swing.JFrame {
                 dispose();
             }
             if(btnLista == 2){
+                mod.setData_agendada(data);                                
+                if (jFormattedTextFieldHora.getText().equals("  :  :  ")) {
+                    mod.setHora_agendada(null);
+                } else {
+                    mod.setHora_agendada(jFormattedTextFieldHora.getText());    
+                }                
                 control.AlterarPedido(mod);            
                 dispose();
             }         

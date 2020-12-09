@@ -5,6 +5,7 @@
  */
 package controle;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -30,12 +31,12 @@ public class ImpressaoPedido {
     Double saldo = 0.0;
     Double valorPago = 0.0;
     Double troco = 0.0;
-    Double qtaProduto = 0.0;
-    Double qtaProdutoF = 0.0;
     String formaPagamento = "";
     String obs_pedido = "";
     String horaAgendada = "";
     int codCliente = 0;
+    String qtdaProduto = "";
+    Double auxProduto = 0.0;
     
 
     public void gerarImpressao (int codPedido) {
@@ -83,19 +84,20 @@ public class ImpressaoPedido {
                          +"\n\r\n\rItens do Pedido\n\r"
                          +"Qtda   Item                       Preco\n\r";
                 
-                conn.executaSQL("select itens_pedido.qtda_produto,produtos.nome_produto,itens_pedido.valor_un,itens_pedido.obs_produto "
+                conn.executaSQL("select itens_pedido.qtda_produto,produtos.nome_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.categoria "
                         + "from pedido,itens_pedido,produtos where pedido.cod_pedido = itens_pedido.cod_pedido and itens_pedido.cod_produto = produtos.id_produto"
                         + " and itens_pedido.cod_pedido = '"+ codPedido +"' ");
                 conn.rs.first();               
                    
                 do{
-                    qtaProduto = conn.rs.getDouble("qtda_produto");
-                    if (qtaProduto < 1) {
-                        qtaProdutoF = Double.parseDouble(formataDecimal.format(qtaProduto));
+                    
+                    if ( conn.rs.getString("categoria").equals("Porções") ) {
+                       qtdaProduto = String.format("%.3f", conn.rs.getDouble("qtda_produto"));                        
                     } else {
-                        qtaProdutoF = Double.parseDouble(formataInt.format(qtaProduto));
+                       qtdaProduto = String.format("%.0f", conn.rs.getDouble("qtda_produto"));    
                     }
-                    pedido += qtaProdutoF +"   "+ conn.rs.getString("nome_produto")+"            "+ formatoMoeda.format(conn.rs.getDouble("qtda_produto")*conn.rs.getDouble("valor_un"))+"\n\r"
+                    
+                    pedido += qtdaProduto +"   "+ conn.rs.getString("nome_produto")+"            "+ formatoMoeda.format(conn.rs.getDouble("qtda_produto")*conn.rs.getDouble("valor_un"))+"\n\r"
                            +"     "+ conn.rs.getString("obs_produto") +"\n\r";
                 }while(conn.rs.next()); 
                 

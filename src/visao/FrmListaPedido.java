@@ -88,7 +88,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                 + "pedido.data_agendada, pedido.cod_pedido, pedido.hora_agendada, clientes.nome_cliente,pedido.status,pedido.local,"
                 + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador "
                 + "from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada = '"+ data +"' "
-                + "order by dataEntrada,pedido.data_agendada,pedido.hora_agendada,horaEntrada,pedido.cod_pedido");
+                + "order by dataEntrada,pedido.data_agendada,horaEntrada,pedido.cod_pedido");
       //  preencherTabelaiFood();
         qtdePedidos();
         InputMap inputMap = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -216,7 +216,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                 for (i = 0; i<101; i++) {
                     try {
                         sleep(50);                          
-                     //   jProgressBar.setValue(i);                        
+                       // jProgressBar.setValue(i);                        
                     } catch (InterruptedException ex) {
                         Logger.getLogger(FrmListaPedido.class.getName()).log(Level.SEVERE, null, ex);
                         log.gravaErro(ex.toString(), "BarraStatus");                      
@@ -230,11 +230,11 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                                 + "from pedido,clientes "
                                 + "where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada "
                                 + "between '"+ dataInicial +"' and '"+ dataFinal +"' "
-                                + "order by dataEntrada,pedido.data_agendada,pedido.hora_agendada,horaEntrada,pedido.cod_pedido");
+                                + "order by dataEntrada,pedido.data_agendada,horaEntrada,pedido.cod_pedido");
                     //    preencherTabelaiFood();
                         qtdePedidos();
                         try {
-                             if ("SABORTRIVIAL".equals(InetAddress.getLocalHost().getHostName())) {
+                            if ("SABORTRIVIAL".equals(InetAddress.getLocalHost().getHostName())) {
                                 // ImprimeLista();
                                 verificaImpressao();                                    
                               //  avisoiFood();
@@ -746,7 +746,13 @@ public final class FrmListaPedido extends javax.swing.JFrame {
             java.sql.Date dataFormat = connLPedido.rs.getDate("data_agendada");
             data = new SimpleDateFormat("dd/MM/yyyy").format(dataFormat);            
             mod.setData_agendada(data);            
-            mod.setHora_agendada(connLPedido.rs.getString("hora_agendada"));            
+            
+            if (connLPedido.rs.getString("hora_agendada") == null) {
+                mod.setHora_agendada(null);                
+            } else {
+                mod.setHora_agendada(connLPedido.rs.getString("hora_agendada"));
+            }
+            
             mod.setObs_pedido(connLPedido.rs.getString("obs_pedido"));
             mod.setLocal(connLPedido.rs.getString("local"));
             mod.setTroco(connLPedido.rs.getDouble("troco"));
