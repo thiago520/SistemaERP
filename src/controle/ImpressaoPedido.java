@@ -5,7 +5,6 @@
  */
 package controle;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -35,8 +34,7 @@ public class ImpressaoPedido {
     String obs_pedido = "";
     String horaAgendada = "";
     int codCliente = 0;
-    String qtdaProduto = "";
-    Double auxProduto = 0.0;
+    String qtdaProduto = "";    
     
 
     public void gerarImpressao (int codPedido) {

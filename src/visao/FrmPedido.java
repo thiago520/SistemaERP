@@ -323,7 +323,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(jTextFieldPProduto);
-        jTextFieldPProduto.setBounds(100, 210, 194, 19);
+        jTextFieldPProduto.setBounds(100, 210, 194, 20);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Histórico", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 2, 10))); // NOI18N
 
@@ -452,13 +452,18 @@ public class FrmPedido extends javax.swing.JFrame {
         jLabel11.setBounds(307, 210, 40, 20);
 
         jTextFieldQuantidade.setNextFocusableComponent(jTextFieldObservacao);
+        jTextFieldQuantidade.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldQuantidadeActionPerformed(evt);
+            }
+        });
         jTextFieldQuantidade.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextFieldQuantidadeKeyReleased(evt);
             }
         });
         jLayeredPane1.add(jTextFieldQuantidade);
-        jTextFieldQuantidade.setBounds(350, 210, 50, 19);
+        jTextFieldQuantidade.setBounds(350, 210, 50, 20);
 
         jLabel12.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jLabel12.setText("Observação:");
@@ -472,7 +477,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(jTextFieldObservacao);
-        jTextFieldObservacao.setBounds(100, 240, 194, 19);
+        jTextFieldObservacao.setBounds(100, 240, 194, 20);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -519,7 +524,7 @@ public class FrmPedido extends javax.swing.JFrame {
         );
 
         jLayeredPane1.add(jPanel3);
-        jPanel3.setBounds(460, 210, 260, 62);
+        jPanel3.setBounds(460, 210, 260, 67);
 
         jTableItens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -551,7 +556,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(jButtonInserir);
-        jButtonInserir.setBounds(80, 280, 90, 23);
+        jButtonInserir.setBounds(80, 280, 90, 25);
 
         jButtonEditar.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jButtonEditar.setText("Editar");
@@ -561,7 +566,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(jButtonEditar);
-        jButtonEditar.setBounds(170, 280, 90, 23);
+        jButtonEditar.setBounds(170, 280, 90, 25);
 
         jButtonExcluir.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jButtonExcluir.setText("Excluir");
@@ -571,7 +576,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(jButtonExcluir);
-        jButtonExcluir.setBounds(260, 280, 100, 23);
+        jButtonExcluir.setBounds(260, 280, 100, 25);
 
         jLabel21.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jLabel21.setText("Observação do pedido:");
@@ -597,7 +602,7 @@ public class FrmPedido extends javax.swing.JFrame {
             }
         });
         jLayeredPane1.add(jTextFieldValorUn);
-        jTextFieldValorUn.setBounds(350, 240, 50, 19);
+        jTextFieldValorUn.setBounds(350, 240, 50, 20);
 
         jButtonCadCliente.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jButtonCadCliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/Search_find_3519.png"))); // NOI18N
@@ -739,7 +744,7 @@ public class FrmPedido extends javax.swing.JFrame {
                         .addComponent(jButtonLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonSair, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -898,7 +903,12 @@ public class FrmPedido extends javax.swing.JFrame {
             int v = 0; 
             codigoC = new String[4];
             while (connPedido.rs.next() & v < 4) {
-                MODELO.addElement(connPedido.rs.getString("nome_cliente"));
+                if ( connPedido.rs.getString("empresa_cliente").equals("")) {                    
+                    MODELO.addElement(connPedido.rs.getString("nome_cliente"));
+                } else {
+                    MODELO.addElement(connPedido.rs.getString("nome_cliente") + " - " + connPedido.rs.getString("empresa_cliente"));                    
+                }
+                
                 codigoC[v] = connPedido.rs.getString("id_cliente");
                 v++;
             }
@@ -1507,6 +1517,10 @@ public class FrmPedido extends javax.swing.JFrame {
             }
        }
     }//GEN-LAST:event_jTextFieldObservacaoKeyReleased
+
+    private void jTextFieldQuantidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldQuantidadeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldQuantidadeActionPerformed
 
     public void verificaiFood(int codCliente) {        
        String SQL = "select pedido.cod_pedido, clientes.nome_cliente, Count(*) as pedidos from pedido,clientes where pedido.cod_cliente = " + codCliente + " and pedido.local = 'ifood' and pedido.cod_cliente = clientes.id_cliente and pedido.status = 'Finalizado' group by pedido.cod_cliente";

@@ -32,7 +32,7 @@ public final class Impressao {
 			DocFlavor df = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
 			PrintService[] ps = PrintServiceLookup.lookupPrintServices(df, null);
 			for (PrintService p : ps) {
-				if(p.getName()!=null && p.getName().contains("PDF")){ //MP-4200
+				if(p.getName()!=null && p.getName().contains("MP-4200")){ //MP-4200
 					System.out.println("Impressora Selecionada: " + p.getName());
 					System.out.println("Impressora encontrada: " + p.getName());
 					impressora = p;                                        
