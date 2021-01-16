@@ -86,7 +86,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         jCheckBoxAtualizar.setSelected(true);
         preencherTabela("select cast(pedido.datahora_entrada as time) as horaEntrada, cast(pedido.datahora_entrada as date) as dataEntrada, "
                 + "pedido.data_agendada, pedido.cod_pedido, pedido.hora_agendada, clientes.nome_cliente,pedido.status,pedido.local,"
-                + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador "
+                + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador, clientes.empresa_cliente "
                 + "from pedido,clientes where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada = '"+ data +"' "
                 + "order by dataEntrada,pedido.data_agendada,horaEntrada,pedido.cod_pedido");
       //  preencherTabelaiFood();
@@ -113,6 +113,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
     public void preencherTabela(String SQL){
         ArrayList dados = new ArrayList();
         String dataHoraSaida = null;
+        String nomeEmpresaCliente = "";
         connLPedido.conexao();  
     
         String [] Colunas = new String[]{"Código","Data","Hora","Cliente","Local","Status","Entregador","Saída"};        
@@ -128,7 +129,12 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                             dataHoraSaida = formataData.format(connLPedido.rs.getDate("dataSaida"));
                             dataHoraSaida += " - " + connLPedido.rs.getString("horaSaida");    
                         }
-                         dados.add(new Object[]{connLPedido.rs.getInt("cod_pedido"),formataData.format(connLPedido.rs.getDate("data_agendada")),connLPedido.rs.getString("hora_agendada"),connLPedido.rs.getString("nome_cliente"),connLPedido.rs.getString("local"),connLPedido.rs.getString("status"),connLPedido.rs.getString("entregador"),dataHoraSaida});                         
+                        if ( connLPedido.rs.getString("empresa_cliente").equals("")) {                    
+                            nomeEmpresaCliente = connLPedido.rs.getString("nome_cliente");
+                        } else {
+                            nomeEmpresaCliente = connLPedido.rs.getString("nome_cliente") + " - " + connLPedido.rs.getString("empresa_cliente");
+                        }
+                         dados.add(new Object[]{connLPedido.rs.getInt("cod_pedido"),formataData.format(connLPedido.rs.getDate("data_agendada")),connLPedido.rs.getString("hora_agendada"),nomeEmpresaCliente,connLPedido.rs.getString("local"),connLPedido.rs.getString("status"),connLPedido.rs.getString("entregador"),dataHoraSaida});
                          dataHoraSaida = "";
                     }while(connLPedido.rs.next());
                 }
@@ -226,7 +232,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                         preencherTabela("select cast(pedido.datahora_entrada as time) as horaEntrada, "
                                 + "cast(pedido.datahora_entrada as date) as dataEntrada, pedido.data_agendada, pedido.cod_pedido, "
                                 + "pedido.hora_agendada, clientes.nome_cliente,pedido.status,pedido.local,"
-                                + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador "
+                                + "cast(pedido.datahora_saida as time) as horaSaida, cast(pedido.datahora_saida as date) as dataSaida, pedido.entregador, clientes.empresa_cliente "
                                 + "from pedido,clientes "
                                 + "where pedido.cod_cliente = clientes.id_cliente and pedido.data_agendada "
                                 + "between '"+ dataInicial +"' and '"+ dataFinal +"' "
@@ -707,6 +713,7 @@ public final class FrmListaPedido extends javax.swing.JFrame {
                 + "pedido.data_agendada,"
                 + "pedido.hora_agendada,"
                 + "clientes.nome_cliente,"
+                + "clientes.empresa_cliente,"
                 + "pedido.status,"
                 + "pedido.local,"
                 + " cast(pedido.datahora_saida as time) as horaSaida,"
