@@ -5,6 +5,7 @@
  */
 package modelo;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
@@ -17,51 +18,53 @@ public class ModeloPedido {
     private int cod_cliente;
     private String status;
     private String forma_pagamento;
-    private Double desconto;
-    private Double valor_pago;
+    private BigDecimal desconto;
+    private BigDecimal valor_pago;
     private String data_agendada;
     private String hora_agendada;
     private String obs_pedido;
-    private Double saldo;
+    private BigDecimal saldo;
     private int cod_produto;
-    private Double qtda_produto;
-    private Double valor_un;
+    private BigDecimal qtda_produto;
+    private BigDecimal valor_un;
     private String local;
     private int cod_itensPedido;
-    private Double troco;
-    private Double valor_total;    
+    private BigDecimal troco;
+    private BigDecimal valor_total;    
     private int BtnAlterarLista;
     private String obs_produto;
     private int PgtTotal;
-    private Double ctrlEstoque; 
+    private BigDecimal ctrlEstoque; 
     private Timestamp datahora_saida;
+    private Timestamp datahora_entrada;
     private String entregador;
+    private String nome_produto;
     
      /**
      * @return the ctrlEstoque
      */
-    public Double getCtrlEstoque() {
+    public BigDecimal getCtrlEstoque() {
         return ctrlEstoque;
     }
 
     /**
      * @param ctrlEstoque the ctrlEstoque to set
      */
-    public void setCtrlEstoque(Double ctrlEstoque) {
+    public void setCtrlEstoque(BigDecimal ctrlEstoque) {
         this.ctrlEstoque = ctrlEstoque;
     }
     
     /**
      * @return the valor_total
      */
-    public Double getValor_total() {
+    public BigDecimal getValor_total() {
         return valor_total;
     }
 
     /**
      * @param valor_total the valor_total to set
      */
-    public void setValor_total(Double valor_total) {
+    public void setValor_total(BigDecimal valor_total) {
         this.valor_total = valor_total;
     }  
 
@@ -125,14 +128,14 @@ public class ModeloPedido {
     /**
      * @return the troco
      */
-    public Double getTroco() {
+    public BigDecimal getTroco() {
         return troco;
     }
 
     /**
      * @param troco the troco to set
      */
-    public void setTroco(Double troco) {
+    public void setTroco(BigDecimal troco) {
         this.troco = troco;
     }
 
@@ -209,28 +212,28 @@ public class ModeloPedido {
     /**
      * @return the desconto
      */
-    public Double getDesconto() {
+    public BigDecimal getDesconto() {
         return desconto;
     }
 
     /**
      * @param desconto the desconto to set
      */
-    public void setDesconto(Double desconto) {
+    public void setDesconto(BigDecimal desconto) {
         this.desconto = desconto;
     }
 
     /**
      * @return the valor_pago
      */
-    public Double getValor_pago() {
+    public BigDecimal getValor_pago() {
         return valor_pago;
     }
 
     /**
      * @param valor_pago the valor_pago to set
      */
-    public void setValor_pago(Double valor_pago) {
+    public void setValor_pago(BigDecimal valor_pago) {
         this.valor_pago = valor_pago;
     }
 
@@ -279,14 +282,14 @@ public class ModeloPedido {
     /**
      * @return the saldo
      */
-    public Double getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
     /**
      * @param saldo the saldo to set
      */
-    public void setSaldo(Double saldo) {
+    public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
     }
 
@@ -307,28 +310,28 @@ public class ModeloPedido {
     /**
      * @return the qtda_produto
      */
-    public Double getQtda_produto() {
+    public BigDecimal getQtda_produto() {
         return qtda_produto;
     }
 
     /**
      * @param qtda_produto the qtda_produto to set
      */
-    public void setQtda_produto(Double qtda_produto) {
+    public void setQtda_produto(BigDecimal qtda_produto) {
         this.qtda_produto = qtda_produto;
     }
 
     /**
      * @return the valor_un
      */
-    public Double getValor_un() {
+    public BigDecimal getValor_un() {
         return valor_un;
     }
 
     /**
      * @param valor_un the valor_un to set
      */
-    public void setValor_un(Double valor_un) {
+    public void setValor_un(BigDecimal valor_un) {
         this.valor_un = valor_un;
     }  
     
@@ -360,5 +363,33 @@ public class ModeloPedido {
         this.entregador = entregador;
     }
     
+    /**
+     * @return the nome_produto
+     */
+    public String getNome_produto() {
+        return nome_produto;
+    }
+
+    /**
+     * @param nome_produto the nome_produto to set
+     */
+    public void setNome_produto(String nome_produto) {
+        this.nome_produto = nome_produto;
+    }
+    
+     /**
+     * @return the datahora_entrada
+     */
+    public Timestamp getDatahora_entrada() {
+        return datahora_entrada;
+    }
+
+    /**
+     * @param datahora_entrada the datahora_entrada to set
+     */
+    public void setDatahora_entrada(Timestamp datahora_entrada) {
+        this.datahora_entrada = datahora_entrada;
+    }
+      
     
 }

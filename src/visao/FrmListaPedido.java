@@ -420,12 +420,6 @@ public final class FrmListaPedido extends javax.swing.JFrame {
         setTitle("Gerenciador de Pedidos");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        jTextFieldPesquisa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldPesquisaActionPerformed(evt);
-            }
-        });
-
         jLabel1.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jLabel1.setText("Cliente:");
 
@@ -725,62 +719,23 @@ public final class FrmListaPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonPesquisarActionPerformed
 
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
-        mod.setBtnAlterarLista(1);
-        try {
-            frm.ReceberBotao(mod);
-        } catch (ParseException ex) {
-            Logger.getLogger(FrmListaPedido.class.getName()).log(Level.SEVERE, null, ex);
-            log.gravaErro(ex.toString(), "ButtonNovo");            
-        }
+        frm.btnNovo();
         frm.setVisible(true);
     }//GEN-LAST:event_jButtonNovoActionPerformed
 
     private void jTablePedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTablePedidosMouseClicked
         String cod = ""+jTablePedidos.getValueAt(jTablePedidos.getSelectedRow(),0);
-        connLPedido.conexao();
-        connLPedido.executaSQL("select * from pedido where cod_pedido='"+cod+"'");             
-              
-       try {                  
-                    
-            connLPedido.rs.first();            
-            mod.setCod_pedido(connLPedido.rs.getInt("cod_pedido"));
-            mod.setCod_cliente(connLPedido.rs.getInt("cod_cliente"));
-            mod.setStatus(connLPedido.rs.getString("status"));
-            mod.setForma_pagamento(connLPedido.rs.getString("forma_pagamento"));
-            mod.setDesconto(connLPedido.rs.getDouble("desconto"));
-            mod.setValor_pago(connLPedido.rs.getDouble("valor_pago"));
-
-            java.sql.Date dataFormat = connLPedido.rs.getDate("data_agendada");
-            data = new SimpleDateFormat("dd/MM/yyyy").format(dataFormat);            
-            mod.setData_agendada(data);            
-            
-            if (connLPedido.rs.getString("hora_agendada") == null) {
-                mod.setHora_agendada(null);                
-            } else {
-                mod.setHora_agendada(connLPedido.rs.getString("hora_agendada"));
-            }
-            
-            mod.setObs_pedido(connLPedido.rs.getString("obs_pedido"));
-            mod.setLocal(connLPedido.rs.getString("local"));
-            mod.setTroco(connLPedido.rs.getDouble("troco"));
-            mod.setValor_total(connLPedido.rs.getDouble("valor_total"));            
-                       
-        } catch (SQLException s){
-            JOptionPane.showMessageDialog(rootPane,"Erro ao selecionar os dados!\nErro: " + s);
-            log.gravaErro(s.toString(), "TablePedidosMouseClicked");          
-        }
-       connLPedido.desconecta();
+        mod.setCod_pedido(Integer.parseInt(cod));
     }//GEN-LAST:event_jTablePedidosMouseClicked
 
     private void jButtonAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAlterarActionPerformed
-         mod.setBtnAlterarLista(2);                
-        try {
-            frm.ReceberBotao(mod);
+        try { 
+            frm.btnAlterar(mod.getCod_pedido());
         } catch (ParseException ex) {
             Logger.getLogger(FrmListaPedido.class.getName()).log(Level.SEVERE, null, ex);
-            log.gravaErro(ex.toString(), "ButtonAlterarAction");            
+            log.gravaErro(ex.toString(), "ButtonAlterar");
         }
-         frm.setVisible(true);         
+        frm.setVisible(true);         
     }//GEN-LAST:event_jButtonAlterarActionPerformed
 
     private void jButtonImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImprimirActionPerformed
@@ -801,10 +756,6 @@ public final class FrmListaPedido extends javax.swing.JFrame {
             BarraStatus();
         }
     }//GEN-LAST:event_jCheckBoxAtualizarActionPerformed
-
-    private void jTextFieldPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPesquisaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldPesquisaActionPerformed
 
     public void preencherTabelaiFood(){                 
         ArrayList dados = new ArrayList();

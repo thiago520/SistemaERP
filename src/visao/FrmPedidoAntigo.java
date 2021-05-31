@@ -68,9 +68,9 @@ public class FrmPedidoAntigo extends javax.swing.JFrame {
         LimpaTela();
        // String dados = "D:/NetBeansProjects/sistemaERPv1.0/src/bematech";
        // NativeLibrary.addSearchPath("mp2064", dados);
-        System.out.println(System.getProperty("os.name"));
-       	int iRetorno;
-        String porta = "COM7";
+     //   System.out.println(System.getProperty("os.name"));
+     //  	int iRetorno;
+     //   String porta = "COM7";
         
         Double num = 2.0;
         String num2 = "";
@@ -272,7 +272,7 @@ public class FrmPedidoAntigo extends javax.swing.JFrame {
 	data1 = formata.format(agora);
 	formata = new SimpleDateFormat(hora);
 	hora1 = formata.format(agora);         
-       /* impressao.imprime(data1 +" - "+ hora1 +"\n\r\n\r"
+        impressao.imprime(data1 +" - "+ hora1 +"\n\r\n\r"
                 + "PEDIDO:\n\r"
                 + "----------------------------------------\n\r\n\r"
                 + jTextAreaPedido.getText() +"\n\r"
@@ -284,7 +284,7 @@ public class FrmPedidoAntigo extends javax.swing.JFrame {
                 + "OBSERVACAO:\n\r"
                 + "----------------------------------------\n\r\n\r"
                 + jTextAreaObs.getText() +"\n\r\n\r\n\r\n\r\n\r");
-                 */                  
+                                  
 //       String texto = new String (START) +
 //                      ATIVA_NEGRITO +"texto negrito" + DESATIVA_NEGRITO;
 //       String texto1 = START + ATIVA_ITALICO + "\ntexto italico" + DESATIVA_ITALICO;

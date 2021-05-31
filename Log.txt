@@ -1,3 +1,3 @@
 [Wed Jan 15 19:29:33 BRT 2020][DESKTOP-AS3L69H] Erro: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
-[Sat Jan 16 16:46:03 BRT 2021][DESKTOP-AS3L69H] Erro: java.sql.SQLException: Column 'empresa_cliente' not found. Classe: preencherTabela
-[Sat Jan 16 16:46:09 BRT 2021][DESKTOP-AS3L69H] Erro: java.sql.SQLException: Column 'empresa_cliente' not found. Classe: preencherTabela
+[Sun May 16 22:56:52 BRT 2021][DESKTOP-AS3L69H] Erro: java.sql.SQLException: Illegal operation on empty result set. Classe: TableItensMouseClicked
+[Sun May 16 22:57:41 BRT 2021][DESKTOP-AS3L69H] Erro: java.sql.SQLException: Illegal operation on empty result set. Classe: TableItensMouseClicked

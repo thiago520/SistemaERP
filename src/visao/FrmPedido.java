@@ -9,19 +9,21 @@ import controle.ConectaBanco;
 import controle.ControlePedido;
 import controle.GeraLog;
 import controle.ImpressaoPedido;
-import controle.ModeloTabela;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +36,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
+import modelo.ModeloItensTable;
 import modelo.ModeloPedido;
+import modelo.ModeloProdutos;
 
 /**
  *
@@ -43,9 +47,11 @@ import modelo.ModeloPedido;
 public class FrmPedido extends javax.swing.JFrame {
 
     ConectaBanco connPedido = new ConectaBanco();
-    ControlePedido control = new ControlePedido();    
-    ModeloPedido mod = new ModeloPedido();
+    ControlePedido controlPedido = new ControlePedido();    
+    ModeloPedido modPedido = new ModeloPedido();
+    ModeloProdutos modProdutos = new ModeloProdutos();
     ImpressaoPedido impressaoPedido = new ImpressaoPedido();
+    ModeloItensTable tablemodel = new ModeloItensTable();
     GeraLog log = new GeraLog();
     DefaultListModel MODELO;
     int EnterC = 0;
@@ -57,19 +63,21 @@ public class FrmPedido extends javax.swing.JFrame {
     String [] codigoC, codigoP;
     private int btnLista;  
     int codCliente,codProduto,codItensPedido;  
-    String NomeProduto,CategoriaProduto;
-    Double subTotal = 0.0;
-    Double ValorItenUn = 0.0;
-    Double Estoque = 0.0;
-    Double Total = 0.0;
-    Double desconto = 0.0;        
-    Double Ptroco = 0.0;
-    Double troco = 0.0;
-    Double saldo = 0.0;          
-    Double custo = 0.0;     
+    String NomeProduto;
+    BigDecimal subTotal = BigDecimal.ZERO;
+    BigDecimal ValorItenUn = BigDecimal.ZERO;
+    BigDecimal Estoque = BigDecimal.ZERO;
+    BigDecimal Total = BigDecimal.ZERO;
+    BigDecimal desconto = BigDecimal.ZERO;
+    BigDecimal Ptroco = BigDecimal.ZERO;
+    BigDecimal troco = BigDecimal.ZERO;
+    BigDecimal saldo = BigDecimal.ZERO;
+    BigDecimal custo = BigDecimal.ZERO;
     int avisoON;
     int qtdPedidos = 0;
     String nomeCliente = "";
+    DateTimeFormatter formataData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter formataHora = DateTimeFormatter.ofPattern("HH:mm:ss");
     
     
     /**
@@ -78,6 +86,7 @@ public class FrmPedido extends javax.swing.JFrame {
     public FrmPedido() {
         initComponents();        
         connPedido.conexao();
+      //  jDateChooserData.setDateFormatString(formataData.format(LocalDate.now()));
         jDateChooserData.setDate(new Date());
         jFormattedTextFieldHora.setText(new SimpleDateFormat("HH:mm:ss").format(new Date(System.currentTimeMillis())));        
         jDateChooserData.setEnabled(false);
@@ -92,8 +101,10 @@ public class FrmPedido extends javax.swing.JFrame {
         jTextFieldEndereco.setEditable(false);
         jTextFieldNumero.setEditable(false);
         jTextFieldComplemento.setEditable(false);
-        jTextFieldEmpresa.setEditable(false);       
+        jTextFieldEmpresa.setEditable(false); 
         
+        jTableItens.setModel(tablemodel);
+        TabelaItensColunas();
         
         InputMap inputMap = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0),"Salvar");        
@@ -452,11 +463,6 @@ public class FrmPedido extends javax.swing.JFrame {
         jLabel11.setBounds(307, 210, 40, 20);
 
         jTextFieldQuantidade.setNextFocusableComponent(jTextFieldObservacao);
-        jTextFieldQuantidade.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldQuantidadeActionPerformed(evt);
-            }
-        });
         jTextFieldQuantidade.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextFieldQuantidadeKeyReleased(evt);
@@ -468,7 +474,7 @@ public class FrmPedido extends javax.swing.JFrame {
         jLabel12.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jLabel12.setText("Observação:");
         jLayeredPane1.add(jLabel12);
-        jLabel12.setBounds(10, 240, 84, 15);
+        jLabel12.setBounds(10, 240, 85, 15);
 
         jTextFieldObservacao.setNextFocusableComponent(jTextFieldValorUn);
         jTextFieldObservacao.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -528,10 +534,7 @@ public class FrmPedido extends javax.swing.JFrame {
 
         jTableItens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {},
-                {},
-                {},
-                {}
+
             },
             new String [] {
 
@@ -581,7 +584,7 @@ public class FrmPedido extends javax.swing.JFrame {
         jLabel21.setFont(new java.awt.Font("Bremen Bd BT", 0, 12)); // NOI18N
         jLabel21.setText("Observação do pedido:");
         jLayeredPane1.add(jLabel21);
-        jLabel21.setBounds(20, 490, 160, 15);
+        jLabel21.setBounds(20, 490, 157, 15);
 
         jTextAreaObs.setColumns(20);
         jTextAreaObs.setRows(5);
@@ -843,58 +846,68 @@ public class FrmPedido extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSairActionPerformed
-        LimpaTela();
-        mod.setBtnAlterarLista(1);
-        mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
-        if (btnLista == 1) {
-            control.ExcluirItensNSalvo(mod); 
+        LimpaTela();        
+        modPedido.setBtnAlterarLista(1);
+//        mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
+        if (btnLista == 1) {            
             jButtonInserir.setEnabled(true);
             jTextFieldPProduto.setEditable(true);
         }
         dispose();        
     }//GEN-LAST:event_jButtonSairActionPerformed
+    
+    public void btnNovo() {
+        jTextFieldPCliente.setText(""); 
+        jTextFieldValorPago.setEnabled(false); 
+        jComboBoxStatus.setEnabled(false);
+        jDateChooserData.setDate(new Date());
+        //jDateChooserData.setDateFormatString(formataData.format(LocalDate.now()));
+        jFormattedTextFieldHora.setText(formataHora.format(LocalTime.now())); 
+        btnLista = 1;
+        LimpaTela();
+        jLabelCodigo.setText(String.valueOf(MaxCodPedido()));
+    }
 
-    public void ReceberBotao(ModeloPedido btn) throws ParseException{              
-        btnLista = btn.getBtnAlterarLista();
-        if (btnLista == 1) {
-            jTextFieldPCliente.setText(""); 
-            jTextFieldValorPago.setEnabled(false); 
-            jComboBoxStatus.setEnabled(false);            
-            LimpaTela();
-            connPedido.executaSQL("select max(cod_pedido) from pedido");
-            try {
-                connPedido.rs.first();
-                int id = connPedido.rs.getInt("max(cod_pedido)");                
-                jLabelCodigo.setText(String.valueOf(id+1));                
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(rootPane, "Erro " + ex);
-                log.gravaErro(ex.toString(), "ReceberBotao");
-            }            
-        }         
-                
-        if (btnLista == 2){            
-            jTextFieldPCliente.setText("");              
-            LimpaTela();    
-            jTextFieldValorPago.setEnabled(true);            
-            jComboBoxStatus.setEnabled(true);            
-            jLabelCodigo.setText(String.valueOf(btn.getCod_pedido()));            
-            jComboBoxStatus.setSelectedItem(btn.getStatus());
-            jComboBoxFPagamento.setSelectedItem(btn.getForma_pagamento());
-            jTextFieldDesconto.setText(String.valueOf(btn.getDesconto()));
-            jTextFieldValorPago.setText(String.valueOf(btn.getValor_pago()));
-            SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
-            java.util.Date dataEntrada = formataData.parse(btn.getData_agendada());  
-            jDateChooserData.setDate(dataEntrada);
-            jFormattedTextFieldHora.setText(btn.getHora_agendada());
-            jTextAreaObs.setText(btn.getObs_pedido());            
-            jComboBoxLocal.setSelectedItem(btn.getLocal());            
-            jTextFieldTroco.setText(String.valueOf(btn.getTroco()));
-            connPedido.executaSQL("select * from clientes,pedido where pedido.cod_pedido = '" + btn.getCod_pedido() + "' and clientes.id_cliente = '" + btn.getCod_cliente() + "' and pedido.cod_cliente = clientes.id_cliente");
-            ResultadoCliente();            
-            preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + btn.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");
-            AtualizaPrecos();            
+    public void btnAlterar(int cod) throws ParseException {
+          
+        jTextFieldPCliente.setText("");              
+        LimpaTela();    
+        jTextFieldValorPago.setEnabled(true);            
+        jComboBoxStatus.setEnabled(true);
+        modPedido.setCod_pedido(cod);            
+        controlPedido.ListaPedido(modPedido);
+        btnLista = 2;
+        jLabelCodigo.setText(String.valueOf( cod ));
+        jComboBoxStatus.setSelectedItem(modPedido.getStatus());
+        jComboBoxFPagamento.setSelectedItem(modPedido.getForma_pagamento());
+        
+        if (modPedido.getDesconto() != null ) {
+            jTextFieldDesconto.setText(String.valueOf(desconto));
+        } else {
+            jTextFieldDesconto.setText("");            
+        }       
+        
+        String dataAgendada = LocalDate.parse(modPedido.getData_agendada()).format(formataData);
+        jDateChooserData.setDate( new SimpleDateFormat("dd/MM/yyyy").parse(dataAgendada));        
+        
+        if (modPedido.getHora_agendada() != null) {
+            jFormattedTextFieldHora.setText(String.valueOf(formataHora.parse(modPedido.getHora_agendada())));    
         }        
-    }           
+        
+        jTextAreaObs.setText(modPedido.getObs_pedido());
+        jComboBoxLocal.setSelectedItem(modPedido.getLocal());                
+        jTextFieldTroco.setText(String.valueOf(modPedido.getTroco()));
+
+        if (modPedido.getValor_pago() != null) {
+            jTextFieldValorPago.setText(String.valueOf(modPedido.getValor_pago()));            
+        } else {
+            jTextFieldValorPago.setText("");            
+        }
+
+        ResultadoCliente("select * from clientes,pedido where pedido.cod_pedido = '" + cod + "' and pedido.cod_cliente = clientes.id_cliente");
+        preencherTabelaItens(cod);
+        AtualizaPrecos();
+    }
     
     public void ListaCliente() {                
         try {            
@@ -947,9 +960,8 @@ public class FrmPedido extends javax.swing.JFrame {
     
     public void MostraCliente() {
         int Linha = jListCliente.getSelectedIndex();
-        if (Linha >= 0) {
-            connPedido.executaSQL("select * from clientes where id_cliente = " + codigoC[Linha] + "");
-            ResultadoCliente();
+        if (Linha >= 0) {            
+            ResultadoCliente("select * from clientes where id_cliente = " + codigoC[Linha] + "");
         }        
     }
     
@@ -961,7 +973,9 @@ public class FrmPedido extends javax.swing.JFrame {
         }        
     }
     
-    public void ResultadoCliente() {        
+    public void ResultadoCliente(String SQL) {
+        
+        connPedido.executaSQL(SQL);
         try {
             connPedido.rs.first();            
             codCliente = connPedido.rs.getInt("id_cliente");
@@ -1011,11 +1025,13 @@ public class FrmPedido extends javax.swing.JFrame {
                 jTextFieldPProduto.setText(connPedido.rs.getString("nome_produto"));                              
             }   
             NomeProduto = connPedido.rs.getString("nome_produto");
-            CategoriaProduto = connPedido.rs.getString("categoria");
-            ValorItenUn = connPedido.rs.getDouble("preco_venda");
-            Estoque = connPedido.rs.getDouble("estoque");
+            modProdutos.setCategoria(connPedido.rs.getString("categoria"));
+            ValorItenUn = connPedido.rs.getBigDecimal("preco_venda");
+            Estoque = connPedido.rs.getBigDecimal("estoque");
             
-            if ("Porções".equals(CategoriaProduto)) {
+            jTextFieldPProduto.setText(NomeProduto);            
+            
+            if ("Porções".equals(modProdutos.getCategoria())) {
                 jTextFieldQuantidade.setText(String.valueOf("0,100"));
                 preco_venda = String.valueOf(connPedido.rs.getDouble("preco_venda")/10);                 
             } else {
@@ -1031,47 +1047,29 @@ public class FrmPedido extends javax.swing.JFrame {
         }
     }
     
-    public void preencherTabelaItens(String SQL){        
-        ArrayList dados = new ArrayList();        
-        Double precoTotal;          
-        BigDecimal valorArred;
-        NumberFormat nf = NumberFormat.getInstance();
-        nf.setMinimumFractionDigits(3);
-        
-        String [] Colunas = new String[]{"Produto","Observação","Qtda","Custo","Total",""};                                
-          
+    public void preencherTabelaItens(int codPedido){
+        String SQL = "select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + codPedido + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido";
+                
         connPedido.executaSQL(SQL);
         try {
             if (!connPedido.rs.next()){                
             } else {                   
                     connPedido.rs.first();
-                        do{ 
-                            precoTotal = connPedido.rs.getDouble("valor_un") * connPedido.rs.getDouble("qtda_produto");                            
-                            valorArred = control.ArredondaValor(precoTotal);
-                           dados.add(new Object[]{connPedido.rs.getString("nome_produto"),connPedido.rs.getString("obs_produto"),nf.format(connPedido.rs.getDouble("qtda_produto")),connPedido.rs.getDouble("valor_un"),valorArred,connPedido.rs.getDouble("estoque")});                                                      
+                        do{
+                            ModeloPedido p = new ModeloPedido();
+                            p.setNome_produto(connPedido.rs.getString("nome_produto"));                            
+                            p.setQtda_produto(connPedido.rs.getBigDecimal("qtda_produto"));
+                            p.setObs_produto(connPedido.rs.getString("obs_produto"));
+                            p.setValor_un(connPedido.rs.getBigDecimal("valor_un"));                            
+                            
+                            tablemodel.addRow(p);
+                           
                         }while(connPedido.rs.next());         
                 }   
         } catch (SQLException ex) {  
             log.gravaErro(ex.toString(), "PreencherTabelaItens");
         }
-        
-        ModeloTabela modelo = new ModeloTabela(dados, Colunas);
-        jTableItens.setModel(modelo);
-        jTableItens.getColumnModel().getColumn(0).setPreferredWidth(150);
-        jTableItens.getColumnModel().getColumn(0).setResizable(true);
-        jTableItens.getColumnModel().getColumn(1).setPreferredWidth(100);
-        jTableItens.getColumnModel().getColumn(1).setResizable(true);    
-        jTableItens.getColumnModel().getColumn(2).setPreferredWidth(38);
-        jTableItens.getColumnModel().getColumn(2).setResizable(true);    
-        jTableItens.getColumnModel().getColumn(3).setPreferredWidth(50);
-        jTableItens.getColumnModel().getColumn(3).setResizable(true);    
-        jTableItens.getColumnModel().getColumn(4).setPreferredWidth(50);
-        jTableItens.getColumnModel().getColumn(4).setResizable(true);
-        jTableItens.getColumnModel().getColumn(5).setMinWidth(0);
-        jTableItens.getColumnModel().getColumn(5).setMaxWidth(0);        
-        jTableItens.getTableHeader().setReorderingAllowed(false);
-        jTableItens.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);        
-        CorNaLinhaEstoque();
+     //   CorNaLinhaEstoque();
         AtualizaPrecos();        
     }  
     
@@ -1134,84 +1132,115 @@ public class FrmPedido extends javax.swing.JFrame {
         jFormattedTextFieldHora.setEnabled(false);
         jCheckBoxAgendar.setSelected(false);
         jListCliente.setVisible(false); 
-        jLabelHaverDeve.setText("");                    
+        jLabelHaverDeve.setText("");
+        jLabelCodigo.setText("");        
         
-        ArrayList dados = new ArrayList();
-        String [] Colunas = new String[]{};
-        ModeloTabela modelo = new ModeloTabela(dados, Colunas);
-        jTableItens.setModel(modelo);        
-        
-        connPedido.executaSQL("select max(cod_pedido) from pedido");
-            try {
-                connPedido.rs.first();
-                int id = connPedido.rs.getInt("max(cod_pedido)");                
-                jLabelCodigo.setText(String.valueOf(id+1));                
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(rootPane, "Erro " + ex);
-                log.gravaErro(ex.toString(), "LimpaTela");
-            }                           
+        tablemodel.limpaTabela();
         
     }
     
+    private int MaxCodPedido() {
+        int codPedido = 0;
+        connPedido.executaSQL("select max(cod_pedido) from pedido");
+        try {
+            connPedido.rs.first();
+            codPedido = connPedido.rs.getInt("max(cod_pedido)");
+            codPedido = codPedido+1;
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Erro " + ex);
+            log.gravaErro(ex.toString(), "MaxCodPedido");
+        }
+        
+        return codPedido;        
+    }
+    
+    private void TabelaItensColunas() {
+        jTableItens.getColumnModel().getColumn(0).setPreferredWidth(150);
+        jTableItens.getColumnModel().getColumn(0).setResizable(true);
+        jTableItens.getColumnModel().getColumn(1).setPreferredWidth(100);
+        jTableItens.getColumnModel().getColumn(1).setResizable(true);    
+        jTableItens.getColumnModel().getColumn(2).setPreferredWidth(38);
+        jTableItens.getColumnModel().getColumn(2).setResizable(true);    
+        jTableItens.getColumnModel().getColumn(3).setPreferredWidth(50);
+        jTableItens.getColumnModel().getColumn(3).setResizable(true);    
+        jTableItens.getColumnModel().getColumn(4).setPreferredWidth(50);
+        jTableItens.getColumnModel().getColumn(4).setResizable(true);             
+        jTableItens.getTableHeader().setReorderingAllowed(false);
+        jTableItens.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+    }
+    
+    
     private void AtualizaPrecos() {
-        subTotal = 0.0;        
-        Total = 0.0;
-        Ptroco = 0.0;
-        troco = 0.0;
-        saldo = 0.0; 
-        desconto = 0.0;
+        subTotal = BigDecimal.ZERO;
+        Total = BigDecimal.ZERO;
+        Ptroco = BigDecimal.ZERO;
+        troco = BigDecimal.ZERO;
+        saldo = BigDecimal.ZERO;
+        desconto = BigDecimal.ZERO;
         
         for ( int i = 0; i < jTableItens.getRowCount(); i++){
-            subTotal += Double.parseDouble( jTableItens.getValueAt(i, 4).toString());
+            String valor = jTableItens.getValueAt(i,4).toString();
+            subTotal = subTotal.add(new BigDecimal(valor));
         }        
         
-        if (subTotal != 0.0) {            
+        if ( subTotal.compareTo(BigDecimal.ZERO) != 0 ) {            
         
             jLabelSubTotal.setText(formatoMoeda.format(subTotal));
-            if ("".equals(jTextFieldDesconto.getText())) {  
-                
-            } else {
-                desconto = Double.parseDouble(jTextFieldDesconto.getText().replace(",", "."));     
-            }       
+            
+            if ( ! "".equals(jTextFieldDesconto.getText()) ) {  
+                desconto = new BigDecimal(jTextFieldDesconto.getText());                
+            }      
             
             connPedido.executaSQL("select SUM(valor_pago)-(SUM(valor_total)-SUM(desconto)) as TOTAL from pedido where status = 'Finalizado' and cod_cliente = " + codCliente + "");            
             try {
                 connPedido.rs.first();
-                saldo = connPedido.rs.getDouble("TOTAL");                
-                jLabelSaldo.setText(formatoMoeda.format(saldo));   
-                if (saldo == 0.0) {
-                    jLabelHaverDeve.setText("");
-                    jLabelSaldo.setText("");                    
-                } else {                 
-                
-                    if (saldo < 0.0) {
-                        jLabelHaverDeve.setText("Deve: ");                    
-                        jLabelHaverDeve.setForeground(Color.red);
-                        jLabelSaldo.setForeground(Color.red);                    
-                    } else {
-                        if (saldo > 0.0) {
-                            jLabelHaverDeve.setText("Em haver: ");
-                            jLabelHaverDeve.setForeground(Color.blue);
-                            jLabelSaldo.setForeground(Color.blue);                        
-                        }                    
-                    }
+                if ( connPedido.rs.getBigDecimal("TOTAL") != null ) {
+                    saldo = connPedido.rs.getBigDecimal("TOTAL");                    
+                    if (saldo.compareTo(BigDecimal.ZERO) == 0 ) {                
+
+                        jLabelHaverDeve.setText("");
+                        jLabelSaldo.setText("");
+
+                    } else {                 
+                        jLabelSaldo.setText(String.valueOf(saldo));
+                        if ( saldo.compareTo(BigDecimal.ZERO) < 0 ) {
+
+                            jLabelHaverDeve.setText("Deve: ");                    
+                            jLabelHaverDeve.setForeground(Color.red);
+                            jLabelSaldo.setForeground(Color.red);                    
+
+                        } else {
+                            if ( saldo.compareTo(BigDecimal.ZERO) > 0 ) {
+
+                                jLabelHaverDeve.setText("Em haver: ");
+                                jLabelHaverDeve.setForeground(Color.blue);
+                                jLabelSaldo.setForeground(Color.blue);                        
+
+                            }                    
+                        }
+                    }    
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(FrmPedido.class.getName()).log(Level.SEVERE, null, ex);
                 log.gravaErro(ex.toString(), "AtualizaPrecos");
             }
             
-            Total = subTotal - desconto - saldo;                                    
+            Total = subTotal.subtract(desconto).subtract(saldo);                                    
             jLabelTotal.setText(formatoMoeda.format(Total));                    
             
-            if ("".equals(jTextFieldTroco.getText()) || jTextFieldTroco.getText().equals("0.0"))            {            
+            if ("".equals(jTextFieldTroco.getText()) || jTextFieldTroco.getText().equals("0.0")) {            
                 jLabelTroco.setText("");       
             } else {
-                Ptroco = Double.parseDouble(jTextFieldTroco.getText().replace(",","."));
-                if (Ptroco <= Total) {
+                
+                Ptroco = new BigDecimal(jTextFieldTroco.getText().replace(",","."));
+                
+                if ( Ptroco.compareTo(Total) <= 0 ) {
+                    
                     jLabelTroco.setText("");
+                    
                 } else {
-                    troco = Total - Ptroco;
+                    
+                    troco = Total.subtract(Ptroco);
                     jLabelTroco.setText(formatoMoeda.format(troco));       
                 }
             }
@@ -1246,10 +1275,9 @@ public class FrmPedido extends javax.swing.JFrame {
     private void jTextFieldPClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPClienteKeyReleased
         LimpaTela();        
         if (jRadioButtonCodigo.isSelected()) {
-            if (caracteresNum.contains(evt.getKeyChar()+"")) {            
-                connPedido.executaSQL("select * from clientes where id_cliente = " + jTextFieldPCliente.getText() + "");
+            if (caracteresNum.contains(evt.getKeyChar()+"")) {
                 DigitarNumProd = 1;
-                ResultadoCliente();
+                ResultadoCliente("select * from clientes where id_cliente = " + jTextFieldPCliente.getText() + "");
                 jListCliente.setVisible(false);
             }
         } else {                   
@@ -1291,41 +1319,51 @@ public class FrmPedido extends javax.swing.JFrame {
     }
     
     private void jButtonInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInserirActionPerformed
-        mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
-        mod.setCod_produto(codProduto);
-        mod.setQtda_produto(Double.parseDouble(jTextFieldQuantidade.getText().replace(',','.')));
-        mod.setValor_un(ValorItenUn);
-        mod.setObs_produto(jTextFieldObservacao.getText());
-        mod.setCtrlEstoque(Estoque);              
-        mod.setEntregador("");        
-        control.InserirItensPedido(mod); 
-        preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + mod.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");
+        
+        ModeloPedido p = new ModeloPedido();
+        p.setNome_produto(jTextFieldPProduto.getText());
+        p.setQtda_produto(new BigDecimal(jTextFieldQuantidade.getText().replace(',','.')));
+        p.setObs_produto(jTextFieldObservacao.getText());
+        p.setValor_un(ValorItenUn);
+        p.setCtrlEstoque(Estoque);
+        
+        tablemodel.addRow(p);        
+        
         jTextFieldPProduto.setText("");
         jTextFieldObservacao.setText("");
         jTextFieldQuantidade.setText("");
         jTextFieldValorUn.setText("");
         AtualizaPrecos();
         jTextFieldPProduto.requestFocus();
+        
+        if ( btnLista == 2 ) {
+            p.setCod_produto(buscaCodProduto(p.getNome_produto()));
+            p.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
+            controlPedido.InserirItensPedido(p);            
+        }
+        
+        /*Double qtdaProduto = Double.parseDouble(jTextFieldQuantidade.getText().replace(',','.'));
+        String obsProduto = jTextFieldObservacao.getText();
+        preencherTabelaItens(codProduto, NomeProduto, qtdaProduto, ValorItenUn, obsProduto, Estoque);
+
+        */
     }//GEN-LAST:event_jButtonInserirActionPerformed
 
     private void jButtonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditarActionPerformed
-        String nome_produto = jTextFieldPProduto.getText();                
-        connPedido.executaSQL("select id_produto from produtos where nome_produto = '" + nome_produto + "'");
+
+        if (jTableItens.getSelectedRow() != -1) {
+            tablemodel.setValueAt(jTextFieldPProduto.getText(), jTableItens.getSelectedRow(), 0);
+            tablemodel.setValueAt(jTextFieldObservacao.getText(), jTableItens.getSelectedRow(), 1);
+            tablemodel.setValueAt(new BigDecimal(jTextFieldQuantidade.getText().replace(',','.')), jTableItens.getSelectedRow(), 2);
+            tablemodel.setValueAt(new BigDecimal(jTextFieldValorUn.getText().replace(',','.')), jTableItens.getSelectedRow(), 3);
+        }
         
-        try {
-            connPedido.rs.first(); 
-            mod.setCod_produto(connPedido.rs.getInt("id_produto"));
-            mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
-            mod.setQtda_produto(Double.parseDouble(jTextFieldQuantidade.getText().replace(',','.')));            
-            mod.setValor_un(Double.parseDouble(jTextFieldValorUn.getText().replace(',','.')));            
-            mod.setObs_produto(jTextFieldObservacao.getText());
-            control.AlterarItensPedido(mod);
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(FrmPedido.class.getName()).log(Level.SEVERE, null, ex);
-            log.gravaErro(ex.toString(), "ButtonEditarActionPerformed");
-        }  
-        preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + mod.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");        
+        modPedido.setNome_produto(jTextFieldPProduto.getText());
+        modPedido.setQtda_produto(new BigDecimal(jTextFieldQuantidade.getText().replace(',','.')));
+        modPedido.setObs_produto(jTextFieldObservacao.getText());
+        modPedido.setValor_un(new BigDecimal(jTextFieldValorUn.getText().replace(',','.')));
+        modPedido.setCtrlEstoque(Estoque);
+          
         jTextFieldPProduto.setText("");
         jTextFieldObservacao.setText("");
         jTextFieldQuantidade.setText("");
@@ -1334,39 +1372,77 @@ public class FrmPedido extends javax.swing.JFrame {
         jTextFieldPProduto.setEditable(true);
         AtualizaPrecos();
         jTextFieldPProduto.requestFocus();        
+        
+        if ( btnLista == 2 ) {
+            modPedido.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
+            controlPedido.AlterarItensPedido(modPedido);
+        }
+//            String nome_produto = jTextFieldPProduto.getText();
+//            connPedido.executaSQL("select id_produto from produtos where nome_produto = '" + nome_produto + "'");
+//        try {
+//            connPedido.rs.first(); 
+//            mod.setCod_produto(connPedido.rs.getInt("id_produto"));
+//            mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
+//            mod.setQtda_produto(Double.parseDouble(jTextFieldQuantidade.getText().replace(',','.')));            
+//            mod.setValor_un(Double.parseDouble(jTextFieldValorUn.getText().replace(',','.')));            
+//            mod.setObs_produto(jTextFieldObservacao.getText());
+            
+//            
+//        } catch (SQLException ex) {
+//            Logger.getLogger(FrmPedido.class.getName()).log(Level.SEVERE, null, ex);
+//            log.gravaErro(ex.toString(), "ButtonEditarActionPerformed");
+//        }        
+//      //  preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + mod.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");
+
     }//GEN-LAST:event_jButtonEditarActionPerformed
 
     private void jTableItensMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableItensMouseClicked
-        String nome_produto;
+
         jTextFieldPProduto.setText((String) jTableItens.getValueAt(jTableItens.getSelectedRow(),0));
-        nome_produto = jTextFieldPProduto.getText();
-        jTextFieldObservacao.setText((String) jTableItens.getValueAt(jTableItens.getSelectedRow(),1));                
-        custo = (Double) jTableItens.getValueAt(jTableItens.getSelectedRow(),3); 
-        jTextFieldQuantidade.setText(""+jTableItens.getValueAt(jTableItens.getSelectedRow(),2));                
+        jTextFieldObservacao.setText((String) jTableItens.getValueAt(jTableItens.getSelectedRow(),1));
+        jTextFieldQuantidade.setText(""+jTableItens.getValueAt(jTableItens.getSelectedRow(),2));
+        jTextFieldValorUn.setText(""+jTableItens.getValueAt(jTableItens.getSelectedRow(),3));
         
-        jTextFieldValorUn.setText(""+jTableItens.getValueAt(jTableItens.getSelectedRow(),3));  
-        mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
-        mod.setQtda_produto(Double.parseDouble(jTextFieldQuantidade.getText().replace(',','.')));
-        mod.setValor_un(custo);
+        modPedido.setNome_produto((String) jTableItens.getValueAt(jTableItens.getSelectedRow(),0));        
+        modPedido.setQtda_produto(new BigDecimal(""+jTableItens.getValueAt(jTableItens.getSelectedRow(),2)));
+        modPedido.setValor_un(new BigDecimal(""+jTableItens.getValueAt(jTableItens.getSelectedRow(),3)));
+        
         jButtonInserir.setEnabled(false);
-        jTextFieldPProduto.setEditable(false);        
-        
-        connPedido.executaSQL("select itens_pedido.cod_itensPedido,produtos.estoque,itens_pedido.cod_produto from itens_pedido,produtos where itens_pedido.cod_pedido = '"+ mod.getCod_pedido() +"' and produtos.nome_produto = '"+ nome_produto +"' and itens_pedido.qtda_produto = '"+ mod.getQtda_produto() +"' and itens_pedido.valor_un = '"+ mod.getValor_un() +"'");
-        try {
-            connPedido.rs.first();            
-            mod.setCod_itensPedido(connPedido.rs.getInt("cod_itensPedido"));
-            mod.setCtrlEstoque(connPedido.rs.getDouble("estoque"));
-            mod.setCod_produto(connPedido.rs.getInt("cod_produto"));            
+        jTextFieldPProduto.setEditable(false);
+
+        if ( btnLista == 2 ) {
+            modPedido.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
+            connPedido.executaSQL("select itens_pedido.cod_itensPedido,produtos.estoque,itens_pedido.cod_produto from itens_pedido,produtos where itens_pedido.cod_pedido = '"+ modPedido.getCod_pedido() +"' and produtos.nome_produto = '"+ modPedido.getNome_produto() +"' and itens_pedido.qtda_produto = '"+ modPedido.getQtda_produto() +"' and itens_pedido.valor_un = '"+ modPedido.getValor_un() +"'");
+            try {
+                connPedido.rs.first();            
+                modPedido.setCod_itensPedido(connPedido.rs.getInt("cod_itensPedido"));
+                modPedido.setCtrlEstoque(connPedido.rs.getBigDecimal("estoque"));
+                modPedido.setCod_produto(connPedido.rs.getInt("cod_produto"));            
             
-        } catch (SQLException ex) {
-            Logger.getLogger(FrmPedido.class.getName()).log(Level.SEVERE, null, ex);
-            log.gravaErro(ex.toString(), "TableItensMouseClicked");
-        }        
+            } catch (SQLException ex) {
+                Logger.getLogger(FrmPedido.class.getName()).log(Level.SEVERE, null, ex);
+                log.gravaErro(ex.toString(), "TableItensMouseClicked");
+            }        
+        }
+//        
+
+//        mod.setQtda_produto(Double.parseDouble(jTextFieldQuantidade.getText().replace(',','.')));
+//        mod.setValor_un(custo);
+////        
+
     }//GEN-LAST:event_jTableItensMouseClicked
 
     private void jButtonExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExcluirActionPerformed
-        control.ExcluirItensPedido(mod); 
-        preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + mod.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");
+
+        if ( jTableItens.getSelectedRow() != -1) {
+            tablemodel.removeRow(jTableItens.getSelectedRow());              
+        }
+        
+        modPedido.setNome_produto(jTextFieldPProduto.getText());
+        modPedido.setQtda_produto(new BigDecimal(jTextFieldQuantidade.getText().replace(',','.')));
+        modPedido.setObs_produto(jTextFieldObservacao.getText());
+        modPedido.setValor_un(new BigDecimal(jTextFieldValorUn.getText().replace(',','.')));        
+          
         jTextFieldPProduto.setText("");
         jTextFieldObservacao.setText("");
         jTextFieldQuantidade.setText("");
@@ -1374,6 +1450,9 @@ public class FrmPedido extends javax.swing.JFrame {
         jButtonInserir.setEnabled(true); 
         jTextFieldPProduto.setEditable(true);
         AtualizaPrecos();
+        controlPedido.ExcluirItensPedido(modPedido); 
+////        preencherTabelaItens("select produtos.nome_produto,itens_pedido.qtda_produto,itens_pedido.valor_un,itens_pedido.obs_produto,produtos.estoque from produtos,itens_pedido where itens_pedido.cod_pedido = '" + mod.getCod_pedido() + "' and itens_pedido.cod_produto = produtos.id_produto order by itens_pedido.cod_itensPedido");
+
     }//GEN-LAST:event_jButtonExcluirActionPerformed
 
     private void jTextFieldDescontoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldDescontoKeyReleased
@@ -1385,56 +1464,60 @@ public class FrmPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldTrocoKeyReleased
 
     private void jButtonSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSalvarActionPerformed
-        String data = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserData.getDate());
-        mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
-        mod.setCod_cliente(codCliente);
-        mod.setStatus((String) jComboBoxStatus.getSelectedItem());
-        mod.setForma_pagamento((String) jComboBoxFPagamento.getSelectedItem());                 
-        
-        mod.setValor_total(subTotal);
+        String data = new SimpleDateFormat("yyyy-MM-dd").format(jDateChooserData.getDate());                
+        modPedido.setCod_cliente(codCliente);
+        modPedido.setStatus((String) jComboBoxStatus.getSelectedItem());
+        modPedido.setForma_pagamento((String) jComboBoxFPagamento.getSelectedItem());
+        modPedido.setValor_total(subTotal);
         
         if (!"".equals(jTextFieldDesconto.getText())) {  
-            mod.setDesconto(Double.parseDouble(jTextFieldDesconto.getText().replace(",",".")));    
+            modPedido.setDesconto(new BigDecimal(jTextFieldDesconto.getText().replace(",",".")));    
         } else {
-            mod.setDesconto(desconto);            
+            modPedido.setDesconto(desconto);            
         }
         
         if (!"".equals(jTextFieldValorPago.getText())) {  
-            mod.setValor_pago(Double.parseDouble(jTextFieldValorPago.getText().replace(",",".")));
+            modPedido.setValor_pago(new BigDecimal(jTextFieldValorPago.getText().replace(",",".")));
         }
-        mod.setObs_pedido(jTextAreaObs.getText());
-        mod.setLocal((String) jComboBoxLocal.getSelectedItem());
+        modPedido.setObs_pedido(jTextAreaObs.getText());
+        modPedido.setLocal((String) jComboBoxLocal.getSelectedItem());
         
         if (!"".equals(jTextFieldTroco.getText())) {  
-            mod.setTroco(Double.parseDouble(jTextFieldTroco.getText().replace(",",".")));
+            modPedido.setTroco(new BigDecimal(jTextFieldTroco.getText().replace(",",".")));
         } else {
-            mod.setTroco(troco);            
+            modPedido.setTroco(troco);            
         }               
         
         if (!"".equals(jTextFieldValorPago.getText())) {  
-            mod.setValor_pago(Double.parseDouble(jTextFieldValorPago.getText().replace(",",".")));           
+            modPedido.setValor_pago(new BigDecimal(jTextFieldValorPago.getText().replace(",",".")));           
         }  
         
-        if (jTableItens.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(rootPane, "Não inserido itens no pedido!");
+        if (jTableItens.getRowCount() == 0 || "".equals(jTextFieldNome.getText())) {
+            JOptionPane.showMessageDialog(rootPane, "Não inserido itens ou não atribuído cliente ao pedido.");
         } else {        
             if(btnLista == 1){ 
                 if (jCheckBoxAgendar.isSelected()) {                          
-                    mod.setData_agendada(data);
-                    mod.setHora_agendada(jFormattedTextFieldHora.getText());    
+                    modPedido.setData_agendada(data);
+                    modPedido.setHora_agendada(jFormattedTextFieldHora.getText());    
                 } else {
-                    mod.setData_agendada(data);
-                    mod.setHora_agendada(null);
-                }                        
-                control.InserirPedido(mod); 
+                    modPedido.setData_agendada(data);
+                    modPedido.setHora_agendada(null);
+                }
+                modPedido.setCod_pedido(MaxCodPedido());
+                controlPedido.InserirPedido(modPedido);
+                
+                for ( int i = 0; i < jTableItens.getRowCount(); i++ ) {
+                    recebeJtable(i);
+                    controlPedido.InserirItensPedido(modPedido);
+                }
+                
                 if ( ! jCheckBoxAgendar.isSelected()) {
                     try{
-                        if ("SABORTRIVIAL".equals(InetAddress.getLocalHost().getHostName())) {
-                            mod.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
-                            mod.setStatus("Em Preparo");
-                            control.AlterarStatus(mod);
+                        if ("SABORTRIVIAL".equals(InetAddress.getLocalHost().getHostName())) {                            
+                            modPedido.setStatus("Em Preparo");
+                            controlPedido.AlterarStatus(modPedido);
                             if ( ! "iFood".equals((String) jComboBoxLocal.getSelectedItem()) ) {
-                                impressaoPedido.gerarImpressao(mod.getCod_pedido());
+                                impressaoPedido.gerarImpressao(modPedido.getCod_pedido());
                             }            
                       }
                     } catch (UnknownHostException ex) {
@@ -1444,28 +1527,31 @@ public class FrmPedido extends javax.swing.JFrame {
                 }
                 dispose();
             }
-            if(btnLista == 2){
-                mod.setData_agendada(data);                                
+            if(btnLista == 2){                
+                modPedido.setData_agendada(data);                                
                 if (jFormattedTextFieldHora.getText().equals("  :  :  ")) {
-                    mod.setHora_agendada(null);
+                    modPedido.setHora_agendada(null);
                 } else {
-                    mod.setHora_agendada(jFormattedTextFieldHora.getText());    
-                }                
-                control.AlterarPedido(mod);            
+                    modPedido.setHora_agendada(jFormattedTextFieldHora.getText());    
+                }
+                modPedido.setCod_pedido(Integer.parseInt(jLabelCodigo.getText()));
+                controlPedido.AlterarPedido(modPedido);            
                 dispose();
             }         
             LimpaTela(); 
         }
-        verificaiFood(codCliente);        
+        //verificaiFood(codCliente);        
     }//GEN-LAST:event_jButtonSalvarActionPerformed
 
     private void jTextFieldValorUnKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValorUnKeyReleased
         
-        if ("Porções".equals(CategoriaProduto)) {                    
-            Double valorUn,QtdaUn;    
-            valorUn = Double.parseDouble(jTextFieldValorUn.getText().replace(",","."));            
-            QtdaUn = valorUn / ValorItenUn;
-            jTextFieldQuantidade.setText(String.valueOf(control.ArredondaCusto(QtdaUn)));            
+        if ("Porções".equals(modProdutos.getCategoria())) {
+            
+            BigDecimal valorUn,QtdaUn;
+            valorUn = new BigDecimal(jTextFieldValorUn.getText().replace(",","."));
+            QtdaUn = valorUn.divide(ValorItenUn,3,RoundingMode.UP);
+            jTextFieldQuantidade.setText(String.valueOf(QtdaUn));
+            
         }
     }//GEN-LAST:event_jTextFieldValorUnKeyReleased
 
@@ -1518,10 +1604,28 @@ public class FrmPedido extends javax.swing.JFrame {
        }
     }//GEN-LAST:event_jTextFieldObservacaoKeyReleased
 
-    private void jTextFieldQuantidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldQuantidadeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldQuantidadeActionPerformed
-
+    public void recebeJtable(int cont) {
+        modPedido.setNome_produto((String) jTableItens.getValueAt(cont,0));
+        modPedido.setObs_produto((String) jTableItens.getValueAt(cont,1));
+        modPedido.setQtda_produto(new BigDecimal(""+jTableItens.getValueAt(cont,2)));
+        modPedido.setValor_un(new BigDecimal(""+jTableItens.getValueAt(cont,3)));        
+        modPedido.setCod_produto(buscaCodProduto(modPedido.getNome_produto()));        
+    }
+    
+    public int buscaCodProduto(String nome) {
+        int cod = 0;        
+        connPedido.executaSQL("select id_produto,estoque from produtos where nome_produto = '" + nome + "'");
+        try {
+            connPedido.rs.first();
+            cod = connPedido.rs.getInt("id_produto");
+            modPedido.setCtrlEstoque(connPedido.rs.getBigDecimal("estoque"));
+        } catch (SQLException ex) {
+            Logger.getLogger(FrmPedido.class.getName()).log(Level.SEVERE, null, ex);
+            log.gravaErro(ex.toString(), "buscaCodProduto");
+        }        
+        return cod;
+    }
+    
     public void verificaiFood(int codCliente) {        
        String SQL = "select pedido.cod_pedido, clientes.nome_cliente, Count(*) as pedidos from pedido,clientes where pedido.cod_cliente = " + codCliente + " and pedido.local = 'ifood' and pedido.cod_cliente = clientes.id_cliente and pedido.status = 'Finalizado' group by pedido.cod_cliente";
        connPedido.executaSQL(SQL);       

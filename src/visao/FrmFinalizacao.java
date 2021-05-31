@@ -49,7 +49,7 @@ public final class FrmFinalizacao extends javax.swing.JFrame {
                 jLabelValor.setText(String.valueOf(formatoMoeda.format(connFinalizacao.rs.getDouble("valor_total"))));
                 jLabelStatus.setText(connFinalizacao.rs.getString("status")); 
                 mod.setCod_pedido(connFinalizacao.rs.getInt("cod_pedido")); 
-                mod.setValor_pago(connFinalizacao.rs.getDouble("valor_total") - connFinalizacao.rs.getDouble("desconto"));                 
+                mod.setValor_pago(connFinalizacao.rs.getBigDecimal("valor_total").subtract(connFinalizacao.rs.getBigDecimal("desconto")));
                 saldo = connFinalizacao.rs.getDouble("SALDO");
             }
         } catch (SQLException ex) {            

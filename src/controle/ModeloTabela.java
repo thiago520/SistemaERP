@@ -45,8 +45,6 @@ public class ModeloTabela extends AbstractTableModel{
         Object[] linha = (Object[])getLinhas().get(numLin);
         return linha[numCol];
     } 
-    
-     
 }
 
 
